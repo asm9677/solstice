@@ -10,8 +10,8 @@ pub mod solstice {
         Ok(())
     }
 
-    pub fn create_card(ctx: Context<CardAccounts>, owner: Option<Pubkey>, latest_image_tx: String) -> Result<()> {
-        ctx.accounts.card_account.owner = owner.unwrap();
+    pub fn create_card(ctx: Context<CardAccounts>, owner: Pubkey, latest_image_tx: String) -> Result<()> {
+        ctx.accounts.card_account.owner = owner;
         ctx.accounts.card_account.latest_image_tx = latest_image_tx;
         Ok(())
     }
