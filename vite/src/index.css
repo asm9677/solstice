@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.line {
+    height: 2px;
+}
+
+.solid {
+    background-color: white;
+}
+
+.dashed {
+    border-top: 2px dashed white;
+}
+
+.dotted {
+    border-top: 2px dotted white;
+}
+
+.arrow {
+    height: 0;
+    border-left: 10px solid white;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+}

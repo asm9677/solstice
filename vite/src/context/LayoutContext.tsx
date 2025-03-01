@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState } from "react";
 interface LayoutContextType {
     isSidebarOpen : boolean,
     setIsSidebarOpen: (isSidebarOpen: boolean) => void;
+    selectedButton : number,
+    setSelectedButton: (selectedButton: number) => void;
 }
 
 // 컨텍스트 생성
@@ -12,9 +14,10 @@ const LayoutContext = createContext<LayoutContextType | null>(null);
 // 컨텍스트 프로바이더 컴포넌트
 export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedButton, setSelectedButton] = useState(0);
 
   return (
-    <LayoutContext.Provider value={{ isSidebarOpen, setIsSidebarOpen }}>
+    <LayoutContext.Provider value={{ isSidebarOpen, setIsSidebarOpen,selectedButton,setSelectedButton }}>
       {children}
     </LayoutContext.Provider>
   );
