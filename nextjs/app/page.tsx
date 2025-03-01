@@ -1,12 +1,13 @@
-import {FC} from "react";
-
-import { LayoutProvider } from "../context/LayoutContext";
+import { FC } from "react";
+import { Canvas } from "@/components/canvas";
+import { LayoutProvider } from "@/context/LayoutContext";
 import Layout from "../components/layout/Layout";
 
-const App:FC = () => {
+const App: FC = () => {
   return (
     <>
       <LayoutProvider>
+        <Canvas></Canvas>
         <Layout />
       </LayoutProvider>
     </>

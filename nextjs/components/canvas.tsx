@@ -1,120 +1,184 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { Stage, Layer, Rect, Transformer, Group, Line as KonvaLine, Text as KonvaText } from "react-konva";
-import {TextBox} from "@/components/text-box";
-import { TextBox as TextBoxType } from "@/types";
+import React, { RefObject, useEffect, useRef, useState } from "react";
+import { Layer, Stage, Transformer } from "react-konva";
+import TextBox from "@/components/text-box";
+import {
+  Line as LineType,
+  Position,
+  Shape,
+  TextBox as TextBoxType,
+} from "@/types";
+import Rect from "@/components/rect";
+import Line from "@/components/line";
 
 export const Canvas = () => {
-    const [lines, setLines] = useState([]);
-    const [texts, setTexts] = useState<TextBoxType[]>([]);
-    const [rects, setRects] = useState([]);
-    const [selectedId, setSelectedId] = useState(null);
-    const [editingText, setEditingText] = useState(null);
-    const transformerRef = useRef(null);
-    const stageRef = useRef(null);
+  const [lines, setLines] = useState<LineType[]>([]);
+  const [texts, setTexts] = useState<TextBoxType[]>([]);
+  const [rects, setRects] = useState<Shape[]>([]);
+  const [circles, setCircles] = useState<Shape[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState(null);
+  const transformerRef = useRef<Transformer | null>(null);
+  const stageRef: RefObject<any> = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-    const addLine = () => {
-        const offset = lines.length * 2;
-        const newLine = {
-            id: `line-${lines.length}`,
-            points: [50 + offset, 50 - offset, 150 + offset, 150 - offset],
-            stroke: "black",
-            strokeWidth: 2,
-            draggable: true
-        };
-        setLines([...lines, newLine]);
-        setSelectedId(newLine.id);
+  const addLine = () => {
+    const offset = lines.length * 2;
+    const newLine = {
+      id: `line-${lines.length}`,
+      points: [50 + offset, 50 - offset, 150 + offset, 150 - offset],
+      stroke: "black",
+      strokeWidth: 2,
+      draggable: true,
     };
-
-    const addText = () => {
-        console.log('text')
-        const newText = {
-            id: `text-${texts.length}`,
-            x: 100,
-            y: 100 + texts.length * 10,
-            text: "Click to edit",
-            fontSize: 20,
-            fill: "black",
-            draggable: true
-        };
-        console.log("new texts:: should be arr", [...texts, newText])
-        setTexts([...texts, newText]);
+    setLines([...lines, newLine]);
+    setSelectedId(newLine.id);
+  };
+  const modifiedText = () => {};
+  const addText = () => {
+    const newText = {
+      id: `text-${texts.length}`,
+      x: 100,
+      y: 100 + texts.length * 10,
+      text: "Click to edit",
+      fontSize: 20,
+      fill: "black",
+      draggable: true,
     };
+    console.log("new texts:: should be arr", [...texts, newText]);
+    setTexts([...texts, newText]);
+  };
 
-    const addRect = () => {
-        const newRect = {
-            id: `rect-${rects.length}`,
-            x: 150,
-            y: 150 + rects.length * 10,
-            width: 100,
-            height: 50,
-            fill: "blue",
-            draggable: true
-        };
-        setRects([...rects, newRect]);
+  const addRect = () => {
+    const newRect: Shape = {
+      id: `rect-${rects.length}`,
+      x: 150,
+      y: 150 + rects.length * 10,
+      width: 100,
+      height: 50,
+      fill: "blue",
+      draggable: true,
     };
+    setRects((prev: Shape[]) => {
+      return [...prev, newRect];
+    });
+  };
+  // 클릭 시 도형 선택
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+  };
 
-    const handleSelect = (id, e) => {
-       console.log({onClick: id})
-        setSelectedId(id);
-        if (transformerRef.current) {
-            transformerRef.current.nodes([e.target]);
-            transformerRef.current.getLayer().batchDraw();
-        }
-    };
+  const updateTextBox = (
+    id: string,
+    newText: string,
+    newPosition: Position,
+  ) => {
+    console.log({ id, newText, newPosition });
+    const newTexts = texts.map((elem) => {
+      if (elem.id === id) {
+        elem.x = newPosition.x;
+        elem.y = newPosition.y;
+        elem.width = newPosition.width;
+        elem.height = newPosition.height;
+        elem.text = newText;
+      }
+      return elem;
+    });
 
+    setTexts(newTexts);
+  };
+  useEffect(() => {
+    if (transformerRef.current) {
+      const selectedNode = stageRef.current?.findOne(`#${selectedId}`);
+      if (selectedNode) {
+        transformerRef.current.nodes([selectedNode]);
+        transformerRef.current.getLayer().batchDraw();
+      } else {
+        transformerRef.current.nodes([]);
+      }
+    }
+  }, [selectedId]);
 
-    return (
-        <div style={{ position: "relative", width: "493px", height: "323px", border: "1px solid gray" }}>
-            <Stage
-                ref={stageRef}
-                width={493}
-                height={323}
-                onMouseDown={(e) => {
-                    if (e.target === e.target.getStage()) {
-                        setSelectedId(null);
-                        setEditingText(null);
-                        transformerRef.current.nodes([]);
-                        transformerRef.current.getLayer().batchDraw();
-                    }
-                }}
-            >
-                <Layer>
-                    <Group>
-                        <Rect width={493} height={323} fill="transparent" stroke="gray" strokeWidth={1} />
-                        {texts.map((text) => (
-                            <TextBox
-                                stageRef={stageRef}
-                                transformerRef={transformerRef}
-                                key={text.id}
-                                {...text}
-                                onClick={(id, e) => handleSelect(id, e)}
-                            />
-                        ))}
-                        {lines.map((line) => (
-                            <KonvaLine
-                                key={line.id}
-                                {...line}
-                                onClick={(e) => handleSelect(line.id, e)}
-                            />
-                        ))}
-                        {rects.map((rect) => (
-                            <Rect
-                                key={rect.id}
-                                {...rect}
-                                onClick={(e) => handleSelect(rect.id, e)}
-                            />
-                        ))}
-                        {selectedId !== null && <Transformer ref={transformerRef} />}
-                    </Group>
-                </Layer>
-            </Stage>
-            <div style={{ display: "flex" }}>
-                <div style={{ width: 75, height: 65, border: "1px solid green", cursor: "pointer" }} onClick={addLine}>Line</div>
-                <div style={{ width: 75, height: 65, border: "1px solid green", cursor: "pointer" }} onClick={addText}>Text</div>
-                <div style={{ width: 75, height: 65, border: "1px solid green", cursor: "pointer" }} onClick={addRect}>Rect</div>
-            </div>
+  return (
+    <div>
+      <Stage
+        ref={stageRef}
+        width={493}
+        height={323}
+        onMouseDown={(e) => {
+          if (e.target === e.target.getStage()) {
+            setSelectedId(null);
+            setEditingText(null);
+            if (transformerRef.current) {
+              transformerRef.current.nodes([]);
+              transformerRef.current.getLayer().batchDraw();
+            }
+          }
+        }}
+      >
+        <Layer>
+          {texts.map((text) => (
+            <TextBox
+              key={text.id}
+              textData={text}
+              onClick={() => handleSelect(text.id)}
+              stageRef={stageRef}
+              updateTextBox={updateTextBox}
+            />
+          ))}
+          {lines.map((line) => (
+            <Line
+              key={line.id}
+              {...line}
+              onClick={(e) => handleSelect(line.id, e)}
+            />
+          ))}
+          {rects.map((rect) => (
+            <Rect
+              key={rect.id}
+              rect={rect}
+              onClick={() => handleSelect(rect.id)}
+            />
+          ))}
+          {selectedId !== null && <Transformer ref={transformerRef} />}
+        </Layer>
+      </Stage>
+      <div className={"flex"}>
+        <div
+          style={{
+            width: 75,
+            height: 65,
+            border: "1px solid green",
+            cursor: "pointer",
+          }}
+          onClick={addLine}
+        >
+          Line
         </div>
-    );
+        <div
+          style={{
+            width: 75,
+            height: 65,
+            border: "1px solid green",
+            cursor: "pointer",
+          }}
+          onClick={addText}
+        >
+          Text
+        </div>
+        <div
+          style={{
+            width: 75,
+            height: 65,
+            border: "1px solid green",
+            cursor: "pointer",
+          }}
+          onClick={addRect}
+        >
+          Rect
+        </div>
+      </div>
+    </div>
+  );
 };
