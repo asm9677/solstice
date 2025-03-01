@@ -13,10 +13,13 @@
     "@solana/web3.js": "^1.98.0",
     "@tailwindcss/vite": "^4.0.9",
     "@types/react-color": "^3.0.13",
-    "react": "^19.0.0",
     "react-color": "^2.19.3",
+    "react-icons": "^5.5.0",
+    "canvas": "^3.1.0",
+    "konva": "^9.3.18",
+    "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react-konva": "^19.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
