@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import ColorPicker from "./ColorPicker";

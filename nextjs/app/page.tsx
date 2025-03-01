@@ -1,7 +1,16 @@
-import {Canvas} from "@/components/canvas";
+import {FC} from "react";
 
-export default function Home() {
+import { LayoutProvider } from "../context/LayoutContext";
+import Layout from "../components/layout/Layout";
+
+const App:FC = () => {
   return (
-      <Canvas></Canvas>
+    <>
+      <LayoutProvider>
+        <Layout />
+      </LayoutProvider>
+    </>
   );
-}
+};
+
+export default App;
