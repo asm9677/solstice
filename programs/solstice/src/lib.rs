@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("3yC1TZXgWjH25ULMC1ibj8csVdArPXFKt6tNAnqUqBLt");
+declare_id!("4gwbY6ojH76FH4FkXeFyP4Miopi6G3dqU5fYwYeVzJa4");
 
 #[program]
 pub mod solstice {
@@ -15,6 +15,23 @@ pub mod solstice {
         ctx.accounts.card_account.latest_image_tx = latest_image_tx;
         Ok(())
     }
+
+    pub fn update_card(ctx: Context<UpdateAccount>, owner: Pubkey, latest_image_tx: String) -> Result<()> {
+        let program_owner = &ID;
+
+        if ctx.accounts.card_account.owner == owner || *program_owner == ctx.accounts.card_account.owner {
+            ctx.accounts.card_account.latest_image_tx = latest_image_tx;
+            Ok(())
+        } else {
+            Err(CardError::Unauthorized.into())
+        }
+    }
+
+    #[error_code]
+    pub enum CardError {
+        #[msg("Unauthorized: Only the owner or the program owner can update this card.")]
+        Unauthorized,
+    }
 }
 
 #[derive(Accounts)]
@@ -28,10 +45,20 @@ pub struct CardAccounts<'info> {
         init,
         payer = user,
         space = 8 + 33 + 88,
+        seeds = [b"card_seed", user.key.as_ref()],
+        bump,
     )]
     pub card_account: Account<'info, Card>,
 
     #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct UpdateAccount<'info> {
+    #[account(mut)]
+    pub card_account: Account<'info, Card>,
     pub user: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
