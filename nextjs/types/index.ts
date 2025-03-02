@@ -8,6 +8,8 @@ interface Shape {
   draggable: boolean;
 }
 
+interface Rect extends Shape {}
+
 interface TextBox extends Shape {
   text: string;
   fontSize: number;
@@ -21,6 +23,16 @@ interface Line {
   draggable: boolean;
 }
 
+interface Star extends Shape {
+  numPoints: number;
+  innerRadius: number;
+  outerRadius: number;
+}
+
+interface Circle extends Shape {
+  radius: number;
+}
+
 interface Position {
   x: number;
   y: number;
@@ -28,4 +40,4 @@ interface Position {
   height?: number;
 }
 
-export type { Shape, TextBox, Line, Position };
+export type { Shape, Rect, TextBox, Line, Position, Star, Circle };

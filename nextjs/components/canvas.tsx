@@ -1,27 +1,31 @@
 "use client";
 
 import React, { RefObject, useEffect, useRef, useState } from "react";
+import Konva from "konva";
 import { Layer, Stage, Transformer } from "react-konva";
 import TextBox from "@/components/text-box";
 import {
+  Circle as CircleType,
   Line as LineType,
   Position,
   Shape,
+  Star as StarType,
   TextBox as TextBoxType,
 } from "@/types";
 import Rect from "@/components/rect";
 import Line from "@/components/line";
+import Circle from "@/components/circle";
+import Star from "@/components/star";
 
 export const Canvas = () => {
   const [lines, setLines] = useState<LineType[]>([]);
   const [texts, setTexts] = useState<TextBoxType[]>([]);
   const [rects, setRects] = useState<Shape[]>([]);
-  const [circles, setCircles] = useState<Shape[]>([]);
+  const [stars, setStars] = useState<StarType[]>([]);
+  const [circles, setCircles] = useState<CircleType[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [editingText, setEditingText] = useState(null);
-  const transformerRef = useRef<Transformer | null>(null);
-  const stageRef: RefObject<any> = useRef(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const transformerRef = useRef<Konva.Transformer | null>(null);
+  const stageRef: RefObject<Konva.Stage | null> = useRef(null);
 
   const addLine = () => {
     const offset = lines.length * 2;
@@ -35,7 +39,6 @@ export const Canvas = () => {
     setLines([...lines, newLine]);
     setSelectedId(newLine.id);
   };
-  const modifiedText = () => {};
   const addText = () => {
     const newText = {
       id: `text-${texts.length}`,
@@ -63,6 +66,39 @@ export const Canvas = () => {
     setRects((prev: Shape[]) => {
       return [...prev, newRect];
     });
+  };
+
+  const addCircle = () => {
+    console.log("adding circle");
+    const newCircle: CircleType = {
+      id: `circle-${circles.length}`,
+      x: 200 + circles.length * 10,
+      y: 150 + circles.length * 10,
+      width: 50, // 원의 지름
+      height: 50,
+      fill: "purple",
+      radius: 25,
+      draggable: true,
+    };
+    setCircles((prevCircles: CircleType[]) => {
+      return [...prevCircles, newCircle];
+    });
+  };
+  const addStar = () => {
+    console.log("adding star");
+    const newStar: StarType = {
+      id: `star-${stars.length}`,
+      x: 250 + stars.length * 10,
+      y: 200 + stars.length * 10,
+      width: 60, // 별 크기
+      height: 60,
+      numPoints: 5,
+      innerRadius: 20,
+      outerRadius: 30,
+      fill: "gold",
+      draggable: true,
+    };
+    setStars((prevStars) => [...prevStars, newStar]);
   };
   // 클릭 시 도형 선택
   const handleSelect = (id: string) => {
@@ -109,7 +145,6 @@ export const Canvas = () => {
         onMouseDown={(e) => {
           if (e.target === e.target.getStage()) {
             setSelectedId(null);
-            setEditingText(null);
             if (transformerRef.current) {
               transformerRef.current.nodes([]);
               transformerRef.current.getLayer().batchDraw();
@@ -139,6 +174,20 @@ export const Canvas = () => {
               key={rect.id}
               rect={rect}
               onClick={() => handleSelect(rect.id)}
+            />
+          ))}
+          {circles.map((circle) => (
+            <Circle
+              key={circle.id}
+              data={circle}
+              onClick={() => handleSelect(circle.id)}
+            />
+          ))}
+          {stars.map((star) => (
+            <Star
+              key={star.id}
+              data={star}
+              onClick={() => handleSelect(star.id)}
             />
           ))}
           {selectedId !== null && <Transformer ref={transformerRef} />}
@@ -177,6 +226,28 @@ export const Canvas = () => {
           onClick={addRect}
         >
           Rect
+        </div>
+        <div
+          style={{
+            width: 75,
+            height: 65,
+            border: "1px solid green",
+            cursor: "pointer",
+          }}
+          onClick={addCircle}
+        >
+          Circle
+        </div>
+        <div
+          style={{
+            width: 75,
+            height: 65,
+            border: "1px solid green",
+            cursor: "pointer",
+          }}
+          onClick={addStar}
+        >
+          Star
         </div>
       </div>
     </div>
