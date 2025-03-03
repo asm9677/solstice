@@ -1,15 +1,7 @@
-import { FC } from "react";
-import { LayoutProvider } from "@/context/LayoutContext";
-import Layout from "@/components/layout/Layout";
+import Editor from "@/components/editor";
 
-const App: FC = () => {
-  return (
-    <>
-      <LayoutProvider>
-        <Layout />
-      </LayoutProvider>
-    </>
-  );
+const Page = () => {
+  return <Editor />;
 };
 
-export default App;
+export default Page;

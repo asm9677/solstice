@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { FC, useEffect, useState } from "react";
 import { FaCrown } from "react-icons/fa";
@@ -23,8 +23,8 @@ const Header: FC = () => {
       if (solana && solana.isPhantom) {
         console.log("✅ Phantom 지갑이 감지되었습니다.");
         const response = await solana.connect({ onlyIfTrusted: false });
-        
-        console.log(response.publicKey.toString())
+
+        console.log(response.publicKey.toString());
         setWalletAddress(response.publicKey.toString());
       } else {
         alert("Phantom 지갑을 설치해주세요!");
@@ -58,35 +58,37 @@ const Header: FC = () => {
               <Menu width={280} subMenu={subMenu}></Menu>
             </div>
           )} */}
-        </button>        
+        </button>
       </div>
 
-      <div className="flex items-center space-x-4 text-[18px] ">        
-        {
-          walletAddress ?
-            <>
-              <button className="h-8 px-3 py-[5px] mr-2 bg-[#272836] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center hover:bg-[#3B3B4F] ">
-                <MdAccountBalanceWallet />
-                <span className="ml-[6px] mr-1 text-[14px]">{ walletAddress.slice(0,4)}..{ walletAddress.slice(-4)}</span>
-              </button>
-              <button className="h-8 px-3 py-[5px] mr-2 bg-[#272836] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center hover:bg-[#3B3B4F] ">
-                <MdSaveAlt  />
-                <span className="ml-[6px] mr-1 text-[14px]">임시 저장</span>
-              </button>
-              <button className="h-8 px-3 py-[5px] bg-[#4D43DE] hover:bg-[#6352E4] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center  ">
-                <LuUpload  />
-                <span className="ml-[6px] mr-1 text-[14px]">업로드</span>
-              </button>
-              
-            </> : 
-            <>
-              <button className="h-8 px-3 py-[5px] bg-[#4D43DE] hover:bg-[#6352E4] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center"
-                onClick={connectWallet}
-              >
-                <span className="ml-[6px] mr-1 text-[14px]">Connect Wallet</span>
-              </button>
-            </>
-        }
+      <div className="flex items-center space-x-4 text-[18px] ">
+        {walletAddress ? (
+          <>
+            <button className="h-8 px-3 py-[5px] mr-2 bg-[#272836] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center hover:bg-[#3B3B4F] ">
+              <MdAccountBalanceWallet />
+              <span className="ml-[6px] mr-1 text-[14px]">
+                {walletAddress.slice(0, 4)}..{walletAddress.slice(-4)}
+              </span>
+            </button>
+            <button className="h-8 px-3 py-[5px] mr-2 bg-[#272836] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center hover:bg-[#3B3B4F] ">
+              <MdSaveAlt />
+              <span className="ml-[6px] mr-1 text-[14px]">임시 저장</span>
+            </button>
+            <button className="h-8 px-3 py-[5px] bg-[#4D43DE] hover:bg-[#6352E4] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center  ">
+              <LuUpload />
+              <span className="ml-[6px] mr-1 text-[14px]">업로드</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className="h-8 px-3 py-[5px] bg-[#4D43DE] hover:bg-[#6352E4] rounded-[4px] font-semibold border-[0.8px] border-[#272836] flex items-center"
+              onClick={connectWallet}
+            >
+              <span className="ml-[6px] mr-1 text-[14px]">Connect Wallet</span>
+            </button>
+          </>
+        )}
       </div>
     </header>
   );
