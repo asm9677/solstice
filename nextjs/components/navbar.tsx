@@ -28,10 +28,17 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import { ActiveTool } from "@/types";
+import { cn } from "@/lib/utils";
+
+interface NavbarProps {
+  activeTool: ActiveTool;
+  onChangeActiveTool: (activeTool: ActiveTool) => void;
+}
 
 const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
-const Navbar = () => {
+const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<String | null>(null);
 
   const connectWallet = async () => {
@@ -88,15 +95,21 @@ const Navbar = () => {
         <Separator orientation={"vertical"} className={"mx-2"} />
         <Hint label={"Select"} side={"bottom"} sideOffset={10}>
           <div
-            className="p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer"
-            onClick={() => {}}
+            className={cn(
+              "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
+              activeTool === "select" && "bg-gray-100",
+            )}
+            onClick={() => onChangeActiveTool("select")}
           >
             <MousePointerClick className={"size-4"} />
           </div>
         </Hint>
         <Hint label={"Undo"} side={"bottom"} sideOffset={10}>
           <div
-            className="p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer"
+            className={cn(
+              "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
+              activeTool === "select" && "bg-gray-100",
+            )}
             onClick={() => {}}
           >
             <Undo2 className={"size-4"} />
