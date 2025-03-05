@@ -127,3 +127,10 @@ html, body {
         @apply bg-background text-foreground;
     }
 }
+
+.w-color-colorful {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

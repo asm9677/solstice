@@ -6,13 +6,21 @@ import Sidebar from "@/components/layout/sidebar";
 import Footer from "@/components/layout/footer";
 import Toolbar from "@/components/toolbar";
 import { fabric } from "fabric";
-import { ActiveTool } from "@/types";
+import { ActiveTool, selectionDependentTools } from "@/types";
 import ShapeSidebar from "@/components/shape-sidebar";
+import FillColorSidebar from "@/components/fill-color-sidebar";
+import StrokeColorSidebar from "@/components/stroke-color-sidebar";
 
 const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
-
-  const { init, editor } = useEditor();
+  const onClearSelection = useCallback(() => {
+    if (selectionDependentTools.includes(activeTool)) {
+      setActiveTool("select");
+    }
+  }, [activeTool]);
+  const { init, editor } = useEditor({
+    clearSelectionCallback: onClearSelection,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef(null);
 
@@ -51,10 +59,25 @@ const Editor = () => {
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />
+        <FillColorSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <StrokeColorSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
         <main
           className={"bg-muted flex-1 overflow-auto relative flex-flex-col"}
         >
-          <Toolbar />
+          <Toolbar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+            editor={editor}
+            key={JSON.stringify(editor?.canvas.getActiveObject())}
+          />
           <div
             ref={containerRef}
             className="flex-1 h-[calc(100%-124px)] bg-muted"
