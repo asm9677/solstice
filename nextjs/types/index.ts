@@ -76,6 +76,7 @@ type BuildEditorProps = {
 };
 
 interface Editor {
+  addImage: (value: string) => void;
   delete: () => void;
   addText: (value: string, options?: ITextboxOptions) => void;
   bringForward: () => void;

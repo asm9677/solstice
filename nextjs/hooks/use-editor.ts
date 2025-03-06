@@ -49,6 +49,16 @@ const buildEditor = ({
     canvas.setActiveObject(object);
   };
   return {
+    addImage: (value: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      fabric.Image.fromURL(value, (image) => {
+        const workspace = getWorkspace();
+        image.scaleToWidth(workspace?.width || 0);
+        image.scaleToHeight(workspace?.width || 0);
+        addToCanvas(image);
+      }),
+        { crossOrigin: "anonymous" };
+    },
     delete: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
