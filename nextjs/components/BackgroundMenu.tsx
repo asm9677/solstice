@@ -29,7 +29,7 @@ const BackgroundMenu = () => {
         <text className="text-sm text-white">색상 추가</text>
         <div className="grid grid-cols-5 w-[250px] flex-row flex-wrap mt-3">
           <button
-            className="bg-white relative h-[50px]  mt-1"
+            className="bg-white relative h-[50px]  mt-1 cursor-pointer"
             onClick={togglePicker}
           >
             +
@@ -52,7 +52,7 @@ const BackgroundMenu = () => {
               <div className="relative group h-[50px] overflow-hidden mt-1">
                 <button
                   key={index}
-                  className={`h-[50px] w-[50px] border ${
+                  className={`h-[50px] w-[50px] border cursor-pointer ${
                     currentColor === color
                       ? "border-white"
                       : "border-transparent"

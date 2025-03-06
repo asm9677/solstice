@@ -9,6 +9,12 @@ declare global {
       publicKey?: {
         toString: () => string;
       };
+      signMessage: (message: Uint8Array, display?: "utf8" | "hex") => Promise<{
+        publicKey: {
+          toString: () => string;
+        };
+        signature: Uint8Array;
+      }>;
     };
   }
 }

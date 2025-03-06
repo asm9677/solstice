@@ -35,7 +35,7 @@ const ColorPalette: FC<ColorPaletteProps> = ({
         return (
           <button
             key={index}
-            className={`h-[50px] w-[50px] border ${
+            className={`h-[50px] w-[50px] border cursor-pointer ${
               currentColor === color ? "border-white" : "border-transparent"
             } hover:border-white group-hover:border-white`}
             style={{ backgroundColor: grayScalePalette[index] }}
