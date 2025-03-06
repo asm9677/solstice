@@ -49,6 +49,13 @@ const buildEditor = ({
     canvas.setActiveObject(object);
   };
   return {
+    delete: () => {
+      canvas.getActiveObjects().forEach((object) => {
+        canvas.remove(object);
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      });
+    },
     changeFontFamily: (value: string) => {
       setFontFamily(value);
       canvas.getActiveObjects().forEach((object) => {

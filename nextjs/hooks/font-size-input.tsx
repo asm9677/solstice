@@ -34,7 +34,7 @@ const FontSizeInput = ({ value, onChange }: FontSizeInputProps) => {
       />
       <Button
         variant={"outline"}
-        onClick={decrement}
+        onClick={increment}
         className={"p-2 rounded-l-none border-l-0"}
         size={"icon"}
       >
