@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 
 import * as material from "material-colors";
+import { ITextboxOptions } from "fabric/fabric-impl";
 
 const colors = [
   material.red["500"],
@@ -24,16 +25,6 @@ const colors = [
   "transparent",
 ];
 
-interface Shape {
-  id: string;
-  x: number;
-  y: number;
-  fill: string;
-  width?: number;
-  height?: number;
-  draggable: boolean;
-}
-
 type ActiveTool =
   | "select"
   | "shapes"
@@ -50,6 +41,27 @@ type ActiveTool =
   | "remove-bg"
   | "templates";
 
+const fonts = [
+  "Arial",
+  "Arial Black",
+  "Verdana",
+  "Helvetica",
+  "Tahoma",
+  "Trebuchet MS",
+  "Times New Roman",
+  "Georgia",
+  "Garamond",
+  "Courier New",
+  "Brush Script MT",
+  "Palatino",
+  "Bookman",
+  "Comic Sans MS",
+  "Impact",
+  "Lucida Sans Unicode",
+  "Geneva",
+  "Lucida Console",
+];
+
 type BuildEditorProps = {
   canvas: fabric.Canvas;
   fillColor: string;
@@ -58,13 +70,26 @@ type BuildEditorProps = {
   setFillColor: (color: string) => void;
   setStrokeColor: (color: string) => void;
   setStrokeWidth: (width: number) => void;
-  selectedObjects: fabric.Object[] | null;
+  selectedObjects: fabric.Object[];
+  fontFamily: string;
+  setFontFamily: (family: string) => void;
 };
 
 interface Editor {
+  addText: (value: string, options?: ITextboxOptions) => void;
+  bringForward: () => void;
+  sendBackwards: () => void;
+  changeFontFamily: (family: string) => void;
+  changeFontWeight: (weight: number) => void;
   changeFillColor: (color: string) => void;
   changeStrokeColor: (color: string) => void;
   changeStrokeWidth: (width: number) => void;
+  changeFontSize: (fontSize: number) => void;
+  changeFontStyle: (style: string) => void;
+  getActiveFontFamily: () => string;
+  getActiveFontWeight: () => number;
+  getActiveFontStyle: () => void;
+  getActiveFontSize: () => number;
   addCircle: () => void;
   addSoftRectangle: () => void;
   addRectangle: () => void;
@@ -75,7 +100,7 @@ interface Editor {
   getActiveStrokeColor: () => string;
   strokeWidth: number;
   canvas: fabric.Canvas;
-  selectedObjects: fabric.Object[] | null;
+  selectedObjects: fabric.Object[];
 }
 
 interface EditorHookProps {
@@ -92,6 +117,10 @@ const selectionDependentTools = [
   "stroke-width",
 ];
 
+const FONT_FAMILY = "Arial";
+const FONT_SIZE = 32;
+const FONT_WEIGHT = 400;
+const FONT_STYLE = "normal";
 const FILL_COLOR = "#000000";
 const STROKE_COLOR = "#000000";
 const STROKE_WIDTH = 2;
@@ -135,16 +164,30 @@ const TRIANGLE_OPTIONS = {
   height: 400,
   angle: 0,
 };
+const TEXT_OPTIONS = {
+  type: "textbox",
+  left: 100,
+  top: 100,
+  fill: FILL_COLOR,
+  fontSize: FONT_SIZE,
+  fontFamily: FONT_FAMILY,
+};
 
 export {
   CIRCLE_OPTIONS,
   RECTANGLE_OPTIONS,
   TRIANGLE_OPTIONS,
   DIAMOND_OPTIONS,
+  TEXT_OPTIONS,
+  FONT_FAMILY,
+  FONT_STYLE,
+  FONT_WEIGHT,
+  FONT_SIZE,
   FILL_COLOR,
   STROKE_COLOR,
   STROKE_WIDTH,
   colors,
   selectionDependentTools,
+  fonts,
 };
-export type { Shape, ActiveTool, BuildEditorProps, Editor, EditorHookProps };
+export type { ActiveTool, BuildEditorProps, Editor, EditorHookProps };

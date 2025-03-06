@@ -14,7 +14,6 @@ const useCanvasEvents = ({
 }: UseCanvasEventsProps) => {
   useEffect(() => {
     if (canvas) {
-      console.log({ canvas });
       canvas.on("selection:created", (e) => {
         console.log("selected:created");
         setSelectedObjects(e.selected || []);
