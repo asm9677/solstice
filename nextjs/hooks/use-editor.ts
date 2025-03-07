@@ -26,6 +26,7 @@ import {
   isTextType,
   transformText,
 } from "@/lib/utils";
+import useWindowEvents from "@/hooks/use-window-events";
 
 const buildEditor = ({
   canvas,
@@ -354,7 +355,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
   const { autoZoom } = useAutoResize({ canvas, container });
-
+  useWindowEvents();
   useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
   const editor = useMemo(() => {
     if (canvas) {
