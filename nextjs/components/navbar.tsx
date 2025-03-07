@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/menubar";
 import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
+import bs58 from "bs58";
 
 interface NavbarProps {
   editor: Editor | undefined;
@@ -87,6 +88,45 @@ const Navbar = ({
     // checkIfWalletIsConnected();
   }, []);
 
+  const getCanvasHash = async (blob: Blob): Promise<string> => {
+    const arrayBuffer = await blob.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+    const hashHex = Buffer.from(hashBuffer).toString("hex");
+    return hashHex;
+  };
+
+  const onClickMint = async () => {
+    const blob = editor?.mintImage();
+    const hash = await getCanvasHash(blob!);
+    const encodedHash = new TextEncoder().encode(hash);
+
+    const signedMessage = await window.solana?.signMessage(encodedHash, "utf8");
+
+    const formData = new FormData();
+    const file = new File([blob!], "card.png", { type: blob!.type });
+    formData.append("image", file);
+    if (walletAddress) {
+      formData.append("address", walletAddress);
+    }
+    if (signedMessage) {
+      const signatureBs58 = bs58.encode(signedMessage.signature);
+      formData.append("signature", signatureBs58);
+    }
+    formData.append("hash", hash);
+
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL, {
+        method: "POST",
+        body: formData, // FormData 전송
+      });
+
+      const data = await response.json();
+      console.log("서버 응답:", data);
+    } catch (error) {
+      console.error("파일 업로드 실패:", error);
+    }
+  };
+
   return (
     <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
       <Logo />
@@ -116,7 +156,7 @@ const Navbar = ({
           <div
             className={cn(
               "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-              activeTool === "select" && "bg-gray-100",
+              activeTool === "select" && "bg-gray-100"
             )}
             onClick={() => onChangeActiveTool("select")}
           >
@@ -139,6 +179,7 @@ const Navbar = ({
           )}
         </div>
         <div className="ml-auto flex items-center gap-x-4">
+          {walletAddress && <button onClick={onClickMint}>Mint</button>}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger>
               <div className="flex items-center text-sm">

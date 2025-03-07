@@ -91,6 +91,14 @@ const buildEditor = ({
     canvas._centerObject(object, center);
   };
 
+  const mintImage = () => {
+    const options = generateSaveOptions();
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    const fileData = dataURLtoBlob(canvas.toDataURL(options));
+
+    return fileData;
+  };
+
   const addToCanvas = (object: fabric.Object) => {
     center(object);
     canvas.add(object);
@@ -111,6 +119,7 @@ const buildEditor = ({
         { crossOrigin: "anonymous" };
     },
     getWorkspace,
+    mintImage,
     delete: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
@@ -307,7 +316,7 @@ const buildEditor = ({
           fill: fillColor,
           stroke: strokeColor,
           strokeWidth,
-        },
+        }
       );
       addToCanvas(object);
     },
@@ -324,7 +333,7 @@ const buildEditor = ({
             y: HEIGHT / 2,
           },
         ],
-        { ...DIAMOND_OPTIONS },
+        { ...DIAMOND_OPTIONS }
       );
       addToCanvas(object);
     },
@@ -499,7 +508,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       setCanvas(initialCanvas);
       setContainer(initialContainer);
     },
-    [],
+    []
   );
   return { init, isSaved, editor };
 };

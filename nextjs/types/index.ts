@@ -93,6 +93,7 @@ interface Editor {
   loadJson: (json: string) => void;
   addImage: (value: string) => void;
   getWorkspace: () => fabric.Object | undefined;
+  mintImage: () => Blob;
   delete: () => void;
   changeSize: (value: { width: number; height: number }) => void;
   changeBackground: (value: string) => void;
