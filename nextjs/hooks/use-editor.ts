@@ -110,12 +110,23 @@ const buildEditor = ({
       }),
         { crossOrigin: "anonymous" };
     },
+    getWorkspace,
     delete: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
         canvas.discardActiveObject();
         canvas.renderAll();
       });
+    },
+    changeSize: (value: { width: number; height: number }) => {
+      const workspace = getWorkspace();
+      workspace?.set(value);
+      autoZoom();
+    },
+    changeBackground: (value: string) => {
+      const workspace = getWorkspace();
+      workspace?.set({ fill: value });
+      canvas.renderAll();
     },
     changeFontFamily: (value: string) => {
       setFontFamily(value);
@@ -354,9 +365,11 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fillColor, setFillColor] = useState(FILL_COLOR);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
+
   const { autoZoom } = useAutoResize({ canvas, container });
   useWindowEvents();
   useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
+
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
@@ -374,7 +387,15 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       });
     }
     return undefined;
-  }, [canvas, fontFamily, strokeColor, strokeWidth, selectedObjects]);
+  }, [
+    fillColor,
+    autoZoom,
+    canvas,
+    fontFamily,
+    strokeColor,
+    strokeWidth,
+    selectedObjects,
+  ]);
 
   const init = useCallback(
     ({
@@ -390,7 +411,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         name: "clip",
         hasControls: false,
         selectable: false,
-        fill: "white",
+        fill: "#FFFFFF",
         shadow: new fabric.Shadow({
           color: "rgba(0, 0, 0, 0.5)",
           blur: 5,

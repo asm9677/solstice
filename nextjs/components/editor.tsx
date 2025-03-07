@@ -13,6 +13,7 @@ import StrokeColorSidebar from "@/components/stroke-color-sidebar";
 import TextSidebar from "@/components/text-sidebar";
 import FontSidebar from "@/types/font-sidebar";
 import ImageSidebar from "@/components/layout/image-sidebar";
+import SettingsSidebar from "@/components/settings-sidebar";
 
 const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
@@ -87,6 +88,11 @@ const Editor = () => {
           onChangeActiveTool={onChangeActiveTool}
         />{" "}
         <ImageSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <SettingsSidebar
           editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}

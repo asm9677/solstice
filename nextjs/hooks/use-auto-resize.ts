@@ -71,7 +71,7 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
     return () => {
       if (resizeObserver) resizeObserver.disconnect();
     };
-  }, [canvas, container]);
+  }, [autoZoom, canvas, container]);
 
   return { autoZoom };
 };

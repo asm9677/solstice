@@ -92,7 +92,10 @@ interface Editor {
   saveJson: () => void;
   loadJson: (json: string) => void;
   addImage: (value: string) => void;
+  getWorkspace: () => fabric.Object | undefined;
   delete: () => void;
+  changeSize: (value: { width: number; height: number }) => void;
+  changeBackground: (value: string) => void;
   addText: (value: string, options?: ITextboxOptions) => void;
   bringForward: () => void;
   sendBackwards: () => void;
