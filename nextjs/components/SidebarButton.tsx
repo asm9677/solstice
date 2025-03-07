@@ -54,7 +54,8 @@ const SidebarButton:FC<NavButtonProps> = ({
     formData.append("hash", hash);
 
     try {
-      const response = await fetch("http://localhost:5000/api/image/upload", {
+      const response = await fetch("http://141.164.44.11:5000/api/image/upload", {
+        // const response = await fetch("http://localhost:5000/api/image/upload", {
         method: "POST",
         body: formData, // FormData 전송
       });

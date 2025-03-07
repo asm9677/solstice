@@ -16,7 +16,7 @@ import bs58 from "bs58";
 import { deserializeImageChunkTransaction, readImage, saveImage, splitIntoChunks } from "./imageChunk.js";
 import connection from "./connect.js";
 
-const BATCH_SIZE = 5; // 한 배치당 nonce 계정 15개 사용
+const BATCH_SIZE = 50; // 한 배치당 nonce 계정 15개 사용
 
 const secretKey = Uint8Array.from(
     JSON.parse(await fs.readFile(`${process.env.HOME}/.config/solana/id.json`, "utf8"))
@@ -93,7 +93,7 @@ const sendImageChunks = async (path) => {
 
         const results = await Promise.allSettled(
             transactions.map(({ transaction }) =>
-                sendAndConfirmTransaction(connection, transaction, [owner]).catch((e) => { e })
+                sendAndConfirmTransaction(connection, transaction, [owner]).catch((e) => e)
             )
         );
 

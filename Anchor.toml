@@ -4,14 +4,14 @@
 resolution = true
 skip-lint = false
 
-[programs.devnet]
+[programs.localnet]
 solstice = "EsjGSxfqv9jtBDWmUpPypj58uatCaqppPD7sCULujXAu"  # 필요하면 실제 Devnet 배포 후 업데이트
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Devnet"
+cluster = "Localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
