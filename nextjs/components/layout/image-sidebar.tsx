@@ -28,7 +28,7 @@ const ImageSidebar = ({
   return (
     <aside
       className={cn(
-        "bg-white overflow-auto relative border-r z-[40] w-[360px] h-full flex flex-col",
+        "bg-white relative border-r z-[40] w-[360px] h-full flex flex-col",
         activeTool === "images" ? "visible" : "hidden",
       )}
     >
@@ -62,7 +62,7 @@ const ImageSidebar = ({
           </p>
         </div>
       )}
-      <ScrollArea>
+      <ScrollArea className={"overflow-y-scroll"}>
         <div className={"p-4"}>
           <div className="grid grid-cols-2 gap-4">
             {data &&
