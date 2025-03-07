@@ -17,7 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CiFileOn } from "react-icons/ci";
 import Hint from "@/components/hint";
-import { BsCloudCheck } from "react-icons/bs";
+import { BsCloudCheck, BsCloudSlash } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -29,17 +29,22 @@ import {
 } from "@/components/ui/menubar";
 import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
-import { any } from "zod";
 
 interface NavbarProps {
   editor: Editor | undefined;
   activeTool: ActiveTool;
+  isSaved: boolean;
   onChangeActiveTool: (activeTool: ActiveTool) => void;
 }
 
 const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
-const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
+const Navbar = ({
+  editor,
+  isSaved,
+  activeTool,
+  onChangeActiveTool,
+}: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { openFilePicker } = useFilePicker({
     accept: ".json",
@@ -54,6 +59,7 @@ const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
       }
     },
   });
+
   const connectWallet = async () => {
     try {
       const { solana } = window;
@@ -120,8 +126,17 @@ const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
 
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
-          <BsCloudCheck className={"size-[20px] text-muted-foreground"} />
-          <div className="text-xs text-muted-foreground">Saved</div>
+          {isSaved ? (
+            <>
+              <BsCloudCheck className={"size-[20px] text-green-500"} />
+              <div className="text-xs text-muted-foreground">Saved</div>
+            </>
+          ) : (
+            <>
+              <BsCloudSlash className={"size-[20px] text-red-500"} />
+              <div className="text-xs text-muted-foreground">Saving...</div>
+            </>
+          )}
         </div>
         <div className="ml-auto flex items-center gap-x-4">
           <DropdownMenu modal={false}>

@@ -22,7 +22,7 @@ const Editor = () => {
       setActiveTool("select");
     }
   }, [activeTool]);
-  const { init, editor } = useEditor({
+  const { init, isSaved, editor } = useEditor({
     clearSelectionCallback: onClearSelection,
   });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,6 +54,7 @@ const Editor = () => {
     <div className="h-full flex flex-col">
       <Navbar
         editor={editor}
+        isSaved={isSaved}
         activeTool={activeTool}
         onChangeActiveTool={onChangeActiveTool}
       />
