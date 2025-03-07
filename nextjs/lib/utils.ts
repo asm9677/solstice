@@ -6,6 +6,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function transformText(objects: any) {
+  if (!objects) return;
+
+  objects.forEach((item: any) => {
+    if (item.objects) {
+      transformText(item.objects);
+    } else {
+      item.type === "text" && item.type === "textbox";
+    }
+  });
+}
+
 export function isTextType(type: string | undefined) {
   return type === "text" || type === "i-string" || type === "textbox";
 }
@@ -32,4 +44,13 @@ export function downloadFile(fileData: Blob, type: string) {
   anchorElement.click();
   document.body.removeChild(anchorElement);
   URL.revokeObjectURL(blobUrl);
+}
+
+export function downloadJson(json: string) {
+  const anchorElement = document.createElement("a");
+  anchorElement.href = json;
+  anchorElement.download = `${uuid()}.json}`;
+  document.body.appendChild(anchorElement);
+  anchorElement.click();
+  anchorElement.remove();
 }

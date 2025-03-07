@@ -6,6 +6,7 @@ import {
   MousePointerClick,
   WalletMinimal,
 } from "lucide-react";
+import { useFilePicker } from "use-file-picker";
 import Logo from "@/components/logo";
 import {
   DropdownMenuContent,
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/menubar";
 import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
+import { any } from "zod";
 
 interface NavbarProps {
   editor: Editor | undefined;
@@ -39,6 +41,19 @@ const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainne
 
 const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const { openFilePicker } = useFilePicker({
+    accept: ".json",
+    onFilesSuccessfullySelected: ({ plainFiles }: any) => {
+      if (plainFiles && plainFiles.length > 0) {
+        const file = plainFiles[0];
+        const reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = () => {
+          editor?.loadJson(reader.result as string);
+        };
+      }
+    },
+  });
   const connectWallet = async () => {
     try {
       const { solana } = window;
@@ -79,7 +94,7 @@ const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={"start"} className={"min-w-60"}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openFilePicker()}>
               <CiFileOn className="size-8" />
               <div>
                 <p>Open</p>

@@ -22,6 +22,7 @@ import useCanvasEvents from "@/hooks/use-canvas-events";
 import {
   dataURLtoBlob,
   downloadFile,
+  downloadJson,
   isTextType,
   transformText,
 } from "@/lib/utils";
@@ -70,7 +71,7 @@ const buildEditor = ({
     await transformText(dataUrl.objects);
 
     const fileString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataUrl, null, "\t"))}`;
-    downloadFile(fileString, "json");
+    downloadJson(fileString);
   };
   const loadJson = (json: string) => {
     const data = JSON.parse(json);
