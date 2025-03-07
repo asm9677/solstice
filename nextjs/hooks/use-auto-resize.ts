@@ -24,6 +24,10 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
       .getObjects()
       .find((object) => object.name == "clip");
 
+    if (!localWorkspace) {
+      console.warn("⚠️ localWorkspace (clip object) not found!");
+      return;
+    }
     const scale = fabric.util.findScaleToFit(localWorkspace, {
       width,
       height,
@@ -61,15 +65,19 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
   }, [canvas, container]);
 
   useEffect(() => {
-    let resizeObserver: ResizeObserver | null = null;
-    if (canvas && container) {
-      resizeObserver = new ResizeObserver(() => {
-        autoZoom();
-      });
-      resizeObserver.observe(container);
-    }
-    return () => {
-      if (resizeObserver) resizeObserver.disconnect();
+    if (!canvas) return;
+
+    const handleWindowResize = () => {
+      console.log("handleWindowResize");
+      autoZoom();
     };
-  }, [canvas, container]);
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, [autoZoom, container, canvas]);
+
+  return { autoZoom };
 };

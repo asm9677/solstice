@@ -41,6 +41,17 @@ type ActiveTool =
   | "remove-bg"
   | "templates";
 
+const JSON_KEYS = [
+  "name",
+  "gradientAngle",
+  "selectable",
+  "hasControls",
+  "linkData",
+  "editable",
+  "extensionType",
+  "extension",
+];
+
 const fonts = [
   "Arial",
   "Arial Black",
@@ -73,9 +84,18 @@ type BuildEditorProps = {
   selectedObjects: fabric.Object[];
   fontFamily: string;
   setFontFamily: (family: string) => void;
+  autoZoom: () => void;
 };
 
 interface Editor {
+  saveImage: (type: string) => void;
+  saveJson: () => void;
+  loadJson: (json: string) => void;
+  addImage: (value: string) => void;
+  getWorkspace: () => fabric.Object | undefined;
+  delete: () => void;
+  changeSize: (value: { width: number; height: number }) => void;
+  changeBackground: (value: string) => void;
   addText: (value: string, options?: ITextboxOptions) => void;
   bringForward: () => void;
   sendBackwards: () => void;
@@ -186,6 +206,7 @@ export {
   FILL_COLOR,
   STROKE_COLOR,
   STROKE_WIDTH,
+  JSON_KEYS,
   colors,
   selectionDependentTools,
   fonts,

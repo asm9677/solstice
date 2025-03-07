@@ -7,7 +7,7 @@ import {
 } from "@/types";
 import Hint from "@/components/hint";
 import { cn, isTextType } from "@/lib/utils";
-import { ArrowDown, ArrowUp, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronDown, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaBold, FaItalic } from "react-icons/fa";
 import FontSizeInput from "@/hooks/font-size-input";
@@ -195,6 +195,13 @@ const Toolbar = ({ editor, activeTool, onChangeActiveTool }: ToolbarProps) => {
             )}
           >
             <ArrowDown className={"size-4"} />
+          </Button>
+        </Hint>
+      </div>
+      <div className="flex items-center h-full justify-center">
+        <Hint label={"sendBackwards"} side={"bottom"} sideOffset={5}>
+          <Button variant="ghost" size="icon" onClick={() => editor?.delete()}>
+            <Trash className={"size-4"} />
           </Button>
         </Hint>
       </div>

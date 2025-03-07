@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BuildEditorProps,
   CIRCLE_OPTIONS,
@@ -9,6 +9,7 @@ import {
   FONT_FAMILY,
   FONT_SIZE,
   FONT_WEIGHT,
+  JSON_KEYS,
   RECTANGLE_OPTIONS,
   STROKE_COLOR,
   STROKE_WIDTH,
@@ -18,7 +19,14 @@ import {
 import { useAutoResize } from "@/hooks/use-auto-resize";
 import { fabric } from "fabric";
 import useCanvasEvents from "@/hooks/use-canvas-events";
-import { isTextType } from "@/lib/utils";
+import {
+  dataURLtoBlob,
+  downloadFile,
+  downloadJson,
+  isTextType,
+  transformText,
+} from "@/lib/utils";
+import useWindowEvents from "@/hooks/use-window-events";
 
 const buildEditor = ({
   canvas,
@@ -31,7 +39,47 @@ const buildEditor = ({
   selectedObjects,
   fontFamily,
   setFontFamily,
+  autoZoom,
 }: BuildEditorProps): Editor => {
+  const generateSaveOptions = () => {
+    const { width, height, left, top } = getWorkspace() as fabric.Rect;
+
+    return {
+      name: "Image",
+      format: "png",
+      quality: 1,
+      width,
+      height,
+      left,
+      top,
+    };
+  };
+
+  const saveImage = (type: string) => {
+    let fileData;
+    if (type === "svg") {
+      fileData = new Blob([canvas.toSVG()], { type: "image/svg+xml" });
+    } else {
+      const options = generateSaveOptions();
+      canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+      fileData = dataURLtoBlob(canvas.toDataURL(options));
+    }
+    downloadFile(fileData, type);
+  };
+
+  const saveJson = async () => {
+    const dataUrl = canvas.toJSON(JSON_KEYS);
+    await transformText(dataUrl.objects);
+
+    const fileString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataUrl, null, "\t"))}`;
+    downloadJson(fileString);
+  };
+  const loadJson = (json: string) => {
+    const data = JSON.parse(json);
+
+    canvas.loadFromJSON(data, autoZoom);
+  };
+
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -49,6 +97,37 @@ const buildEditor = ({
     canvas.setActiveObject(object);
   };
   return {
+    saveImage,
+    saveJson,
+    loadJson,
+    addImage: (value: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      fabric.Image.fromURL(value, (image) => {
+        const workspace = getWorkspace();
+        image.scaleToWidth(workspace?.width || 0);
+        image.scaleToHeight(workspace?.width || 0);
+        addToCanvas(image);
+      }),
+        { crossOrigin: "anonymous" };
+    },
+    getWorkspace,
+    delete: () => {
+      canvas.getActiveObjects().forEach((object) => {
+        canvas.remove(object);
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      });
+    },
+    changeSize: (value: { width: number; height: number }) => {
+      const workspace = getWorkspace();
+      workspace?.set(value);
+      autoZoom();
+    },
+    changeBackground: (value: string) => {
+      const workspace = getWorkspace();
+      workspace?.set({ fill: value });
+      canvas.renderAll();
+    },
     changeFontFamily: (value: string) => {
       setFontFamily(value);
       canvas.getActiveObjects().forEach((object) => {
@@ -277,6 +356,7 @@ const buildEditor = ({
     selectedObjects,
   };
 };
+const AUTO_SAVE_KEY = "autosave_canvas";
 
 export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
@@ -286,8 +366,10 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fillColor, setFillColor] = useState(FILL_COLOR);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
-  useAutoResize({ canvas, container });
+  const [isSaved, setIsSaved] = useState(true);
 
+  const { autoZoom } = useAutoResize({ canvas, container });
+  useWindowEvents();
   useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
   const editor = useMemo(() => {
     if (canvas) {
@@ -295,6 +377,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         canvas,
         fillColor,
         setFillColor,
+        autoZoom,
         strokeColor,
         setStrokeColor,
         strokeWidth,
@@ -305,7 +388,74 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       });
     }
     return undefined;
-  }, [canvas, fontFamily, strokeColor, strokeWidth, selectedObjects]);
+  }, [
+    fillColor,
+    autoZoom,
+    canvas,
+    fontFamily,
+    strokeColor,
+    strokeWidth,
+    selectedObjects,
+  ]);
+
+  const saveToLocalStorage = () => {
+    if (!editor?.canvas) return;
+
+    const jsonData = editor.canvas.toJSON(JSON_KEYS);
+    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(jsonData));
+
+    setIsSaved(true);
+  };
+
+  useEffect(() => {
+    if (!editor?.canvas) return;
+
+    const handleSave = async () => {
+      setIsSaved(false);
+      saveToLocalStorage();
+    };
+
+    editor.canvas.on("object:modified", handleSave);
+    editor.canvas.on("object:added", handleSave);
+    editor.canvas.on("object:removed", handleSave);
+
+    return () => {
+      editor.canvas.off("object:modified", handleSave);
+      editor.canvas.off("object:added", handleSave);
+      editor.canvas.off("object:removed", handleSave);
+    };
+  }, [editor?.canvas]);
+
+  const loadFromLocalStorage = () => {
+    const savedData = localStorage.getItem(AUTO_SAVE_KEY);
+    if (savedData && editor?.canvas) {
+      const storedCanvas = editor.canvas.loadFromJSON(savedData, () => {
+        console.log("editor:canvas:", editor?.canvas);
+
+        const workspace = editor.canvas.getObjects().find((obj) => {
+          return obj.name === "clip";
+        });
+        if (workspace) {
+          console.log("workspace foudnd::", workspace);
+          workspace.set({
+            selectable: false,
+            hasControls: false,
+            evented: false,
+            hoverCursor: "default",
+          });
+          editor.canvas.centerObject(workspace);
+          editor.canvas.renderAll();
+        }
+
+        setIsSaved(true);
+      });
+      setCanvas(storedCanvas);
+    }
+  };
+
+  useEffect(() => {
+    loadFromLocalStorage();
+  }, [editor?.canvas]);
 
   const init = useCallback(
     ({
@@ -321,7 +471,9 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         name: "clip",
         hasControls: false,
         selectable: false,
-        fill: "white",
+        evented: false,
+        hoverCursor: "default",
+        fill: "#FFFFFF",
         shadow: new fabric.Shadow({
           color: "rgba(0, 0, 0, 0.5)",
           blur: 5,
@@ -349,5 +501,5 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     },
     [],
   );
-  return { init, editor };
+  return { init, isSaved, editor };
 };

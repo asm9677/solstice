@@ -4,10 +4,9 @@ import {
   Download,
   LogOut,
   MousePointerClick,
-  Redo2,
-  Undo2,
   WalletMinimal,
 } from "lucide-react";
+import { useFilePicker } from "use-file-picker";
 import Logo from "@/components/logo";
 import {
   DropdownMenuContent,
@@ -18,7 +17,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { CiFileOn } from "react-icons/ci";
 import Hint from "@/components/hint";
-import { BsCloudCheck } from "react-icons/bs";
+import { BsCloudCheck, BsCloudSlash } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import {
@@ -28,18 +27,38 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { ActiveTool } from "@/types";
+import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
+  editor: Editor | undefined;
   activeTool: ActiveTool;
+  isSaved: boolean;
   onChangeActiveTool: (activeTool: ActiveTool) => void;
 }
 
 const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
-const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
-  const [walletAddress, setWalletAddress] = useState<String | null>(null);
+const Navbar = ({
+  editor,
+  isSaved,
+  activeTool,
+  onChangeActiveTool,
+}: NavbarProps) => {
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const { openFilePicker } = useFilePicker({
+    accept: ".json",
+    onFilesSuccessfullySelected: ({ plainFiles }: any) => {
+      if (plainFiles && plainFiles.length > 0) {
+        const file = plainFiles[0];
+        const reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = () => {
+          editor?.loadJson(reader.result as string);
+        };
+      }
+    },
+  });
 
   const connectWallet = async () => {
     try {
@@ -81,7 +100,7 @@ const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={"start"} className={"min-w-60"}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => openFilePicker()}>
               <CiFileOn className="size-8" />
               <div>
                 <p>Open</p>
@@ -104,29 +123,20 @@ const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
             <MousePointerClick className={"size-4"} />
           </div>
         </Hint>
-        <Hint label={"Undo"} side={"bottom"} sideOffset={10}>
-          <div
-            className={cn(
-              "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-              activeTool === "select" && "bg-gray-100",
-            )}
-            onClick={() => {}}
-          >
-            <Undo2 className={"size-4"} />
-          </div>
-        </Hint>
-        <Hint label={"Redo"} side={"bottom"} sideOffset={10}>
-          <div
-            className="p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer"
-            onClick={() => {}}
-          >
-            <Redo2 className={"size-4"} />
-          </div>
-        </Hint>
+
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
-          <BsCloudCheck className={"size-[20px] text-muted-foreground"} />
-          <div className="text-xs text-muted-foreground">Saved</div>
+          {isSaved ? (
+            <>
+              <BsCloudCheck className={"size-[20px] text-green-500"} />
+              <div className="text-xs text-muted-foreground">Saved</div>
+            </>
+          ) : (
+            <>
+              <BsCloudSlash className={"size-[20px] text-red-500"} />
+              <div className="text-xs text-muted-foreground">Saving...</div>
+            </>
+          )}
         </div>
         <div className="ml-auto flex items-center gap-x-4">
           <DropdownMenu modal={false}>
@@ -137,12 +147,63 @@ const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align={"end"} className={"min-w-60"}>
-              <DropdownMenuItem className={"flex items-center gap-x-2"}>
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveJson()}
+              >
                 <CiFileOn className="size-8" />
                 <div>
                   <p>JSON</p>
                   <p className={"text-xs text-muted-foreground"}>
                     Save for later editing
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("png")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>PNG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for sharing on the web
+                  </p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("svg")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>SVG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for editing in vector software
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("webp")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>WebP</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for quality & compression
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("jpg")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>JPG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for printing
                   </p>
                 </div>
               </DropdownMenuItem>

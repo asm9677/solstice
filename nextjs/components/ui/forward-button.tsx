@@ -35,11 +35,6 @@ const buttonVariants = cva(
   },
 );
 
-// after
-const MyButton = forwardRef((props, forwardedRef) => (
-  <button {...props} ref={forwardedRef} />
-));
-
 function Button({
   className,
   variant,

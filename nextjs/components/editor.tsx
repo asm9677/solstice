@@ -12,6 +12,8 @@ import FillColorSidebar from "@/components/fill-color-sidebar";
 import StrokeColorSidebar from "@/components/stroke-color-sidebar";
 import TextSidebar from "@/components/text-sidebar";
 import FontSidebar from "@/types/font-sidebar";
+import ImageSidebar from "@/components/layout/image-sidebar";
+import SettingsSidebar from "@/components/settings-sidebar";
 
 const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
@@ -20,7 +22,7 @@ const Editor = () => {
       setActiveTool("select");
     }
   }, [activeTool]);
-  const { init, editor } = useEditor({
+  const { init, isSaved, editor } = useEditor({
     clearSelectionCallback: onClearSelection,
   });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,12 @@ const Editor = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <Navbar activeTool={activeTool} onChangeActiveTool={onChangeActiveTool} />
+      <Navbar
+        editor={editor}
+        isSaved={isSaved}
+        activeTool={activeTool}
+        onChangeActiveTool={onChangeActiveTool}
+      />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
           activeTool={activeTool}
@@ -77,6 +84,16 @@ const Editor = () => {
           onChangeActiveTool={onChangeActiveTool}
         />{" "}
         <FontSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />{" "}
+        <ImageSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <SettingsSidebar
           editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
