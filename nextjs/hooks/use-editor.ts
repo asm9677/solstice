@@ -9,6 +9,7 @@ import {
   FONT_FAMILY,
   FONT_SIZE,
   FONT_WEIGHT,
+  JSON_KEYS,
   RECTANGLE_OPTIONS,
   STROKE_COLOR,
   STROKE_WIDTH,
@@ -18,7 +19,12 @@ import {
 import { useAutoResize } from "@/hooks/use-auto-resize";
 import { fabric } from "fabric";
 import useCanvasEvents from "@/hooks/use-canvas-events";
-import { isTextType } from "@/lib/utils";
+import {
+  dataURLtoBlob,
+  downloadFile,
+  isTextType,
+  transformText,
+} from "@/lib/utils";
 
 const buildEditor = ({
   canvas,
@@ -31,7 +37,47 @@ const buildEditor = ({
   selectedObjects,
   fontFamily,
   setFontFamily,
+  autoZoom,
 }: BuildEditorProps): Editor => {
+  const generateSaveOptions = () => {
+    const { width, height, left, top } = getWorkspace() as fabric.Rect;
+
+    return {
+      name: "Image",
+      format: "png",
+      quality: 1,
+      width,
+      height,
+      left,
+      top,
+    };
+  };
+
+  const saveImage = (type: string) => {
+    let fileData;
+    if (type === "svg") {
+      fileData = new Blob([canvas.toSVG()], { type: "image/svg+xml" });
+    } else {
+      const options = generateSaveOptions();
+      canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+      fileData = dataURLtoBlob(canvas.toDataURL(options));
+    }
+    downloadFile(fileData, type);
+  };
+
+  const saveJson = async () => {
+    const dataUrl = canvas.toJSON(JSON_KEYS);
+    await transformText(dataUrl.objects);
+
+    const fileString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(dataUrl, null, "\t"))}`;
+    downloadFile(fileString, "json");
+  };
+  const loadJson = (json: string) => {
+    const data = JSON.parse(json);
+
+    canvas.loadFromJSON(data, autoZoom);
+  };
+
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -49,6 +95,9 @@ const buildEditor = ({
     canvas.setActiveObject(object);
   };
   return {
+    saveImage,
+    saveJson,
+    loadJson,
     addImage: (value: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       fabric.Image.fromURL(value, (image) => {
@@ -303,7 +352,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [fillColor, setFillColor] = useState(FILL_COLOR);
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
-  useAutoResize({ canvas, container });
+  const { autoZoom } = useAutoResize({ canvas, container });
 
   useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
   const editor = useMemo(() => {
@@ -312,6 +361,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         canvas,
         fillColor,
         setFillColor,
+        autoZoom,
         strokeColor,
         setStrokeColor,
         strokeWidth,

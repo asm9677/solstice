@@ -4,8 +4,6 @@ import {
   Download,
   LogOut,
   MousePointerClick,
-  Redo2,
-  Undo2,
   WalletMinimal,
 } from "lucide-react";
 import Logo from "@/components/logo";
@@ -28,19 +26,19 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { ActiveTool } from "@/types";
+import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
+  editor: Editor | undefined;
   activeTool: ActiveTool;
   onChangeActiveTool: (activeTool: ActiveTool) => void;
 }
 
 const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
-const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
-  const [walletAddress, setWalletAddress] = useState<String | null>(null);
-
+const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const connectWallet = async () => {
     try {
       const { solana } = window;
@@ -104,25 +102,7 @@ const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
             <MousePointerClick className={"size-4"} />
           </div>
         </Hint>
-        <Hint label={"Undo"} side={"bottom"} sideOffset={10}>
-          <div
-            className={cn(
-              "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-              activeTool === "select" && "bg-gray-100",
-            )}
-            onClick={() => {}}
-          >
-            <Undo2 className={"size-4"} />
-          </div>
-        </Hint>
-        <Hint label={"Redo"} side={"bottom"} sideOffset={10}>
-          <div
-            className="p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer"
-            onClick={() => {}}
-          >
-            <Redo2 className={"size-4"} />
-          </div>
-        </Hint>
+
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
           <BsCloudCheck className={"size-[20px] text-muted-foreground"} />
@@ -137,12 +117,63 @@ const Navbar = ({ activeTool, onChangeActiveTool }: NavbarProps) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align={"end"} className={"min-w-60"}>
-              <DropdownMenuItem className={"flex items-center gap-x-2"}>
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveJson()}
+              >
                 <CiFileOn className="size-8" />
                 <div>
                   <p>JSON</p>
                   <p className={"text-xs text-muted-foreground"}>
                     Save for later editing
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("png")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>PNG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for sharing on the web
+                  </p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("svg")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>SVG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for editing in vector software
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("webp")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>WebP</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for quality & compression
+                  </p>
+                </div>
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                className={"flex items-center gap-x-2"}
+                onClick={() => editor?.saveImage("jpg")}
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>JPG</p>
+                  <p className={"text-xs text-muted-foreground"}>
+                    Best for printing
                   </p>
                 </div>
               </DropdownMenuItem>
