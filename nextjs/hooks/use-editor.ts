@@ -316,7 +316,7 @@ const buildEditor = ({
           fill: fillColor,
           stroke: strokeColor,
           strokeWidth,
-        }
+        },
       );
       addToCanvas(object);
     },
@@ -333,7 +333,7 @@ const buildEditor = ({
             y: HEIGHT / 2,
           },
         ],
-        { ...DIAMOND_OPTIONS }
+        { ...DIAMOND_OPTIONS },
       );
       addToCanvas(object);
     },
@@ -462,6 +462,38 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     }
   };
 
+  const removeSelectedObjects = useCallback(() => {
+    if (!editor?.canvas) return;
+
+    const canvas = editor.canvas;
+
+    const activeObjects = canvas.getActiveObjects();
+    if (activeObjects.length) {
+      activeObjects.forEach((obj) => canvas.remove(obj)); // 선택된 객체 삭제
+      canvas.discardActiveObject(); // 선택 해제
+      canvas.requestRenderAll(); // 화면 다시 렌더링
+    }
+  }, [editor?.canvas]);
+
+  useEffect(() => {
+    console.log("hi");
+    // 키보드 이벤트 핸들러 추가
+    const handleKeydown = (e: KeyboardEvent) => {
+      console.log();
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault(); // 기본 브라우저 동작 방지
+        removeSelectedObjects();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      // 키보드 이벤트 핸들러 제거
+      document.removeEventListener("keydown", handleKeydown);
+    };
+  }, [removeSelectedObjects]);
+
   useEffect(() => {
     loadFromLocalStorage();
   }, [editor?.canvas]);
@@ -508,7 +540,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       setCanvas(initialCanvas);
       setContainer(initialContainer);
     },
-    []
+    [],
   );
   return { init, isSaved, editor };
 };

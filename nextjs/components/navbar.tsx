@@ -199,7 +199,7 @@ const Navbar = ({
                     Save for later editing
                   </p>
                 </div>
-              </DropdownMenuItem>{" "}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className={"flex items-center gap-x-2"}
                 onClick={() => editor?.saveImage("png")}
