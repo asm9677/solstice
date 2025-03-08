@@ -29,7 +29,7 @@ const FontSidebar = ({
       )}
     >
       <ToolSidebarHeader title={"Font"} description={"Change the text font"} />
-      <ScrollArea>
+      <ScrollArea className={"overflow-y-scroll"}>
         <div className={"space-y-1 p-4"}>
           {fonts.map((font) => (
             <Button
