@@ -30,7 +30,6 @@ const Editor = () => {
 
   const onChangeActiveTool = useCallback(
     (tool: ActiveTool) => {
-      console.log("clicked");
       if (tool === activeTool) {
         return setActiveTool("select");
       }
@@ -113,7 +112,7 @@ const Editor = () => {
           >
             <canvas ref={canvasRef} />
           </div>
-          <Footer />
+          <Footer editor={editor} />
         </main>
       </div>
     </div>

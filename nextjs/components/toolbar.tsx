@@ -10,8 +10,8 @@ import { cn, isTextType } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronDown, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaBold, FaItalic } from "react-icons/fa";
-import FontSizeInput from "@/hooks/font-size-input";
-import { useState } from "react";
+import FontSizeInput from "@/components/font-size-input";
+import React, { useState } from "react";
 
 interface ToolbarProps {
   editor: Editor | undefined;
@@ -79,6 +79,14 @@ const Toolbar = ({ editor, activeTool, onChangeActiveTool }: ToolbarProps) => {
       ...current,
       fontSize: value,
     }));
+  };
+
+  const remove = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    console.log(e);
+    if (e.key === "Backspace") {
+      // remove all the selected objects
+      editor?.delete();
+    }
   };
   return (
     <div className="shrink-0 border-b h-[56px] bg-white w-full flex items-center overflow-x-auto z-[49] p-2 gap-x-2">
@@ -199,7 +207,7 @@ const Toolbar = ({ editor, activeTool, onChangeActiveTool }: ToolbarProps) => {
         </Hint>
       </div>
       <div className="flex items-center h-full justify-center">
-        <Hint label={"sendBackwards"} side={"bottom"} sideOffset={5}>
+        <Hint label={"Remove object"} side={"bottom"} sideOffset={5}>
           <Button variant="ghost" size="icon" onClick={() => editor?.delete()}>
             <Trash className={"size-4"} />
           </Button>

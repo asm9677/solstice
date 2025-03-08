@@ -5,6 +5,7 @@ import {
   LogOut,
   MousePointerClick,
   WalletMinimal,
+  Trash2,
 } from "lucide-react";
 import { useFilePicker } from "use-file-picker";
 import Logo from "@/components/logo";
@@ -30,6 +31,14 @@ import {
 import { ActiveTool, Editor } from "@/types";
 import { cn } from "@/lib/utils";
 import bs58 from "bs58";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface NavbarProps {
   editor: Editor | undefined;
@@ -47,6 +56,8 @@ const Navbar = ({
   onChangeActiveTool,
 }: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+
   const { openFilePicker } = useFilePicker({
     accept: ".json",
     onFilesSuccessfullySelected: ({ plainFiles }: any) => {
@@ -156,14 +167,51 @@ const Navbar = ({
           <div
             className={cn(
               "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-              activeTool === "select" && "bg-gray-100"
+              activeTool === "select" && "bg-gray-100",
             )}
             onClick={() => onChangeActiveTool("select")}
           >
             <MousePointerClick className={"size-4"} />
           </div>
-        </Hint>
-
+        </Hint>{" "}
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger>
+            <Hint
+              label={"Remove all and reset"}
+              side={"bottom"}
+              sideOffset={10}
+            >
+              <div
+                className={cn(
+                  "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
+                )}
+              >
+                <Trash2 className={"size-4"} color={"red"} />
+              </div>
+            </Hint>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action will remove all objects from the canvas. This cannot
+              be undone.
+            </DialogDescription>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  editor?.reset();
+                  setOpen(false);
+                }}
+              >
+                Yes, Reset
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
           {isSaved ? (
@@ -199,7 +247,7 @@ const Navbar = ({
                     Save for later editing
                   </p>
                 </div>
-              </DropdownMenuItem>{" "}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className={"flex items-center gap-x-2"}
                 onClick={() => editor?.saveImage("png")}

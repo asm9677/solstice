@@ -88,6 +88,9 @@ type BuildEditorProps = {
 };
 
 interface Editor {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  autoZoom: () => void;
   saveImage: (type: string) => void;
   saveJson: () => void;
   loadJson: (json: string) => void;
@@ -95,6 +98,7 @@ interface Editor {
   getWorkspace: () => fabric.Object | undefined;
   mintImage: () => Blob;
   delete: () => void;
+  reset: () => void;
   changeSize: (value: { width: number; height: number }) => void;
   changeBackground: (value: string) => void;
   addText: (value: string, options?: ITextboxOptions) => void;
