@@ -54,7 +54,7 @@ const TextSidebar = ({
             variant={"secondary"}
             size={"lg"}
             onClick={() =>
-              editor?.addText("Subeading", { fontSize: 44, fontWeight: 500 })
+              editor?.addText("Subheading", { fontSize: 44, fontWeight: 500 })
             }
           >
             <span className={"text-xl font-semibold"}>Add a subheading</span>
