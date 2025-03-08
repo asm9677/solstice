@@ -98,6 +98,7 @@ interface Editor {
   getWorkspace: () => fabric.Object | undefined;
   mintImage: () => Blob;
   delete: () => void;
+  reset: () => void;
   changeSize: (value: { width: number; height: number }) => void;
   changeBackground: (value: string) => void;
   addText: (value: string, options?: ITextboxOptions) => void;

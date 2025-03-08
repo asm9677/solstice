@@ -139,6 +139,22 @@ const buildEditor = ({
     },
     getWorkspace,
     mintImage,
+    reset: () => {
+      localStorage.removeItem("autosave_canvas");
+      canvas.getObjects().forEach((obj) => {
+        if (obj.name !== "clip") {
+          canvas.remove(obj);
+        }
+      });
+
+      // 선택 해제 및 캔버스 다시 렌더링
+      canvas.discardActiveObject();
+      canvas.requestRenderAll();
+
+      // 캔버스 배경색 유지 (예: 흰색 Hex 값 설정)
+      canvas.backgroundColor = "#FFFFFF";
+      canvas.requestRenderAll();
+    },
     delete: () => {
       canvas.getActiveObjects().forEach((object) => {
         canvas.remove(object);
