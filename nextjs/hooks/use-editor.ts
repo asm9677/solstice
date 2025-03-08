@@ -130,13 +130,16 @@ const buildEditor = ({
     loadJson,
     addImage: (value: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      fabric.Image.fromURL(value, (image) => {
-        const workspace = getWorkspace();
-        image.scaleToWidth(workspace?.width || 0);
-        image.scaleToHeight(workspace?.width || 0);
-        addToCanvas(image);
-      }),
-        { crossOrigin: "anonymous" };
+      fabric.Image.fromURL(
+        value,
+        (image) => {
+          const workspace = getWorkspace();
+          image.scaleToWidth(workspace?.width || 0);
+          image.scaleToHeight(workspace?.width || 0);
+          addToCanvas(image);
+        },
+        { crossOrigin: "anonymous" },
+      );
     },
     getWorkspace,
     mintImage,
@@ -528,6 +531,30 @@ export const useEditor = ({
     setCanvas(initialCanvas);
     setContainer(initialContainer);
   };
+  const fixObjectPositions = (
+    canvas: fabric.Canvas,
+    workspace: fabric.Rect | undefined,
+  ) => {
+    if (!workspace) return;
+
+    const workspaceCenter = workspace.getCenterPoint();
+
+    canvas.getObjects().forEach((obj) => {
+      if (obj.name !== "clip") {
+        const objCenter = obj.getCenterPoint();
+        const deltaX = workspaceCenter.x - objCenter.x;
+        const deltaY = workspaceCenter.y - objCenter.y;
+
+        obj.set({
+          left: obj.left! + deltaX,
+          top: obj.top! + deltaY,
+        });
+        obj.setCoords();
+      }
+    });
+
+    canvas.renderAll();
+  };
 
   const init = useCallback(
     ({
@@ -537,6 +564,7 @@ export const useEditor = ({
       initialContainer: HTMLDivElement;
       initialCanvas: fabric.Canvas;
     }) => {
+      // const savedData = null;
       const savedData = localStorage.getItem("autosave_canvas");
       if (savedData) {
         initialCanvas.loadFromJSON(savedData, () => {
@@ -544,7 +572,6 @@ export const useEditor = ({
             return obj.name === "clip";
           });
           if (workspace) {
-            console.log("workspace foudnd::", workspace);
             workspace.set({
               selectable: false,
               hasControls: false,
@@ -553,9 +580,11 @@ export const useEditor = ({
             });
             initialCanvas.setWidth(initialContainer.offsetWidth);
             initialCanvas.setHeight(initialContainer.offsetHeight);
+            initialCanvas.setViewportTransform(fabric.iMatrix.concat());
             initialCanvas.centerObject(workspace);
             setContainer(initialContainer);
             initialCanvas.clipPath = workspace;
+            // fixObjectPositions(canvas, workspace);
             initialCanvas.renderAll();
           }
 
