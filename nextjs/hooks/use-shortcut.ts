@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Editor } from "@/types";
+import { ActiveTool, Editor } from "@/types";
 import { fabric } from "fabric";
 
 interface ShortcutHookProps {
   selectedObjects: fabric.Object[];
   editor: Editor | undefined;
+  activeTool: ActiveTool;
 }
 
 // 브라우저 환경이라 가정
@@ -12,7 +13,11 @@ const isMac =
   typeof window !== "undefined" &&
   /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
-const useShortcut = ({ selectedObjects, editor }: ShortcutHookProps) => {
+const useShortcut = ({
+  selectedObjects,
+  editor,
+  activeTool,
+}: ShortcutHookProps) => {
   // 복사해둔 객체들을 임시로 저장할 변수
   const copiedObjectsRef = useRef<fabric.Object[] | null>(null);
 
@@ -91,6 +96,7 @@ const useShortcut = ({ selectedObjects, editor }: ShortcutHookProps) => {
   }, [editor?.canvas]);
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
+      if (activeTool !== "select") return;
       if (!editor?.canvas) return;
       const activeObj = editor?.canvas.getActiveObject();
 
@@ -148,7 +154,7 @@ const useShortcut = ({ selectedObjects, editor }: ShortcutHookProps) => {
 
     document.addEventListener("keydown", handleKeydown);
     return () => document.removeEventListener("keydown", handleKeydown);
-  }, [selectedObjects, editor?.canvas]);
+  }, [activeTool, selectedObjects, editor?.canvas]);
 
   return null; // 이 훅은 DOM에 직접 뭔가 그리지 않으니 반환값 없음
 };

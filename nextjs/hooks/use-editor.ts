@@ -130,25 +130,37 @@ const buildEditor = ({
     loadJson,
     addImage: (value: string) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      fabric.Image.fromURL(value, (image) => {
-        const workspace = getWorkspace();
-        image.scaleToWidth(workspace?.width || 0);
-        image.scaleToHeight(workspace?.width || 0);
-        addToCanvas(image);
-      }),
-        { crossOrigin: "anonymous" };
+      fabric.Image.fromURL(
+        value,
+        (image) => {
+          const workspace = getWorkspace();
+          image.scaleToWidth(workspace?.width || 0);
+          image.scaleToHeight(workspace?.width || 0);
+          addToCanvas(image);
+        },
+        { crossOrigin: "anonymous" },
+      );
     },
     getWorkspace,
     mintImage,
     reset: () => {
       localStorage.removeItem("autosave_canvas");
-      canvas.getObjects().forEach((obj) => {
-        if (obj.name !== "clip") {
+      let clip: fabric.Object | undefined;
+      canvas.getObjects().forEach((obj: fabric.Object) => {
+        if (obj.name === "clip") {
+          clip = obj;
+        } else {
           canvas.remove(obj);
         }
       });
 
+      if (clip) {
+        clip.set({
+          fill: "#FFFFFF", // 배경색 변경
+        });
+      }
       // 선택 해제 및 캔버스 다시 렌더링
+      canvas.clipPath = clip;
       canvas.discardActiveObject();
       canvas.requestRenderAll();
 
@@ -248,12 +260,14 @@ const buildEditor = ({
       return selectedObject.get("fontWeight") || FONT_WEIGHT;
     },
     addText: (value, options) => {
-      const object = new fabric.Textbox(value, {
-        ...TEXT_OPTIONS,
-        fill: fillColor,
-        ...options,
+      document.fonts.ready.then(() => {
+        const object = new fabric.Textbox(value, {
+          ...TEXT_OPTIONS,
+          fill: fillColor,
+          ...options,
+        });
+        addToCanvas(object);
       });
-      addToCanvas(object);
     },
     bringForward: () => {
       canvas.getActiveObjects().forEach((object) => {
@@ -403,7 +417,10 @@ const buildEditor = ({
 };
 const AUTO_SAVE_KEY = "autosave_canvas";
 
-export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
+export const useEditor = ({
+  clearSelectionCallback,
+  activeTool,
+}: EditorHookProps) => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -442,7 +459,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     strokeWidth,
     selectedObjects,
   ]);
-  useShortcut({ selectedObjects, editor });
+  useShortcut({ selectedObjects, editor, activeTool });
   const saveToLocalStorage = useCallback(() => {
     if (!editor?.canvas) return;
 
@@ -514,6 +531,30 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     setCanvas(initialCanvas);
     setContainer(initialContainer);
   };
+  const fixObjectPositions = (
+    canvas: fabric.Canvas,
+    workspace: fabric.Rect | undefined,
+  ) => {
+    if (!workspace) return;
+
+    const workspaceCenter = workspace.getCenterPoint();
+
+    canvas.getObjects().forEach((obj) => {
+      if (obj.name !== "clip") {
+        const objCenter = obj.getCenterPoint();
+        const deltaX = workspaceCenter.x - objCenter.x;
+        const deltaY = workspaceCenter.y - objCenter.y;
+
+        obj.set({
+          left: obj.left! + deltaX,
+          top: obj.top! + deltaY,
+        });
+        obj.setCoords();
+      }
+    });
+
+    canvas.renderAll();
+  };
 
   const init = useCallback(
     ({
@@ -523,6 +564,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       initialContainer: HTMLDivElement;
       initialCanvas: fabric.Canvas;
     }) => {
+      // const savedData = null;
       const savedData = localStorage.getItem("autosave_canvas");
       if (savedData) {
         initialCanvas.loadFromJSON(savedData, () => {
@@ -530,7 +572,6 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
             return obj.name === "clip";
           });
           if (workspace) {
-            console.log("workspace foudnd::", workspace);
             workspace.set({
               selectable: false,
               hasControls: false,
@@ -539,9 +580,11 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
             });
             initialCanvas.setWidth(initialContainer.offsetWidth);
             initialCanvas.setHeight(initialContainer.offsetHeight);
+            initialCanvas.setViewportTransform(fabric.iMatrix.concat());
             initialCanvas.centerObject(workspace);
             setContainer(initialContainer);
             initialCanvas.clipPath = workspace;
+            // fixObjectPositions(canvas, workspace);
             initialCanvas.renderAll();
           }
 

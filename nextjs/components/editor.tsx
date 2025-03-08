@@ -14,6 +14,7 @@ import TextSidebar from "@/components/text-sidebar";
 import FontSidebar from "@/types/font-sidebar";
 import ImageSidebar from "@/components/layout/image-sidebar";
 import SettingsSidebar from "@/components/settings-sidebar";
+import TemplateSidebar from "@/components/template-sidebar";
 
 const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
@@ -24,6 +25,7 @@ const Editor = () => {
   }, [activeTool]);
   const { init, isSaved, editor } = useEditor({
     clearSelectionCallback: onClearSelection,
+    activeTool,
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef(null);
@@ -59,6 +61,11 @@ const Editor = () => {
       />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <TemplateSidebar
+          editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />

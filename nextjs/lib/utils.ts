@@ -49,7 +49,7 @@ export function downloadFile(fileData: Blob, type: string) {
 export function downloadJson(json: string) {
   const anchorElement = document.createElement("a");
   anchorElement.href = json;
-  anchorElement.download = `${uuid()}.json}`;
+  anchorElement.download = `${uuid()}.json`;
   document.body.appendChild(anchorElement);
   anchorElement.click();
   anchorElement.remove();

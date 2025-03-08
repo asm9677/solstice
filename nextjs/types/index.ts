@@ -55,22 +55,29 @@ const JSON_KEYS = [
 const fonts = [
   "Arial",
   "Arial Black",
+  "Bookman",
   "Verdana",
   "Helvetica",
   "Tahoma",
   "Trebuchet MS",
   "Times New Roman",
+  "Roboto",
   "Georgia",
   "Garamond",
   "Courier New",
   "Brush Script MT",
+  "Karla",
   "Palatino",
-  "Bookman",
-  "Comic Sans MS",
   "Impact",
+  "Lato",
   "Lucida Sans Unicode",
+  "Merriweather",
+  "Montserrat",
   "Geneva",
+  "Titillium Web",
   "Lucida Console",
+  "Quicksand",
+  "Ubuntu",
 ];
 
 type BuildEditorProps = {
@@ -130,6 +137,7 @@ interface Editor {
 
 interface EditorHookProps {
   clearSelectionCallback?: () => void;
+  activeTool: ActiveTool;
 }
 
 const selectionDependentTools = [

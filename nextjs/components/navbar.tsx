@@ -174,13 +174,9 @@ const Navbar = ({
             <MousePointerClick className={"size-4"} />
           </div>
         </Hint>{" "}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger>
-            <Hint
-              label={"Remove all and reset"}
-              side={"bottom"}
-              sideOffset={10}
-            >
+        <Hint label={"Remove all and reset"} side={"bottom"} sideOffset={10}>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>
               <div
                 className={cn(
                   "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
@@ -188,30 +184,30 @@ const Navbar = ({
               >
                 <Trash2 className={"size-4"} color={"red"} />
               </div>
-            </Hint>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>Are you sure?</DialogTitle>
-            <DialogDescription>
-              This action will remove all objects from the canvas. This cannot
-              be undone.
-            </DialogDescription>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  editor?.reset();
-                  setOpen(false);
-                }}
-              >
-                Yes, Reset
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogDescription>
+                This action will remove all objects from the canvas. This cannot
+                be undone.
+              </DialogDescription>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    editor?.reset();
+                    setOpen(false);
+                  }}
+                >
+                  Yes, Reset
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </Hint>
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
           {isSaved ? (
