@@ -11,11 +11,14 @@ import { FaShoppingCart } from "react-icons/fa";
 import { LuUpload } from "react-icons/lu";
 import { MdAccountBalanceWallet, MdSaveAlt } from "react-icons/md";
 import ExpandIcon from "../SidebarIcon/ExpandIcon";
+import { useLayoutContext } from "@/context/LayoutContext";
+import { useWalletContext } from "@/context/WalletContext";
 
 const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
 const Header: FC = () => {
-  const [walletAddress, setWalletAddress] = useState<String | null>(null);
+  const {walletAddress, setWalletAddress} = useWalletContext();
+  const {isSidebarOpen, setIsSidebarOpen} = useLayoutContext();
 
   const connectWallet = async () => {
     try {
@@ -48,9 +51,8 @@ const Header: FC = () => {
     <header className="flex items-center justify-between bg-[#1C1C26] border-b-[0.8px] border-[#2c2d3c] p-2 px-4 text-white">
       <div className="flex items-center space-x-4">
         <button
-          className="mr-9 text-[#ABABC0] hover:text-white relative"
-          // onClick={() => setClickedSubMenu(!clickedSubMenu)}
-          // onBlur={() => setClickedSubMenu(false)}
+          className="mr-9 text-[#ABABC0] hover:text-white relative cursor-pointer"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
           <ExpandIcon />
           {/* {clickedSubMenu && (
