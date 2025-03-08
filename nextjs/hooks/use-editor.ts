@@ -27,6 +27,7 @@ import {
   transformText,
 } from "@/lib/utils";
 import useWindowEvents from "@/hooks/use-window-events";
+import useShortcut from "@/hooks/use-shortcut";
 
 const buildEditor = ({
   canvas,
@@ -441,7 +442,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     strokeWidth,
     selectedObjects,
   ]);
-
+  useShortcut({ selectedObjects, editor });
   const saveToLocalStorage = useCallback(() => {
     if (!editor?.canvas) return;
 
@@ -471,36 +472,13 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     };
   }, [saveToLocalStorage, editor?.canvas]);
 
-  const removeSelectedObjects = useCallback(() => {
-    if (!editor?.canvas) return;
-
-    const canvas = editor.canvas;
-
-    const activeObjects = canvas.getActiveObjects();
-    if (activeObjects.length) {
-      activeObjects.forEach((obj) => canvas.remove(obj)); // 선택된 객체 삭제
-      canvas.discardActiveObject(); // 선택 해제
-      canvas.requestRenderAll(); // 화면 다시 렌더링
-    }
-  }, [editor?.canvas]);
-
-  useEffect(() => {
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === "Backspace" || e.key === "Delete") {
-        e.preventDefault(); // 기본 브라우저 동작 방지
-        removeSelectedObjects();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeydown);
-
-    return () => {
-      // 키보드 이벤트 핸들러 제거
-      document.removeEventListener("keydown", handleKeydown);
-    };
-  }, [removeSelectedObjects]);
-
-  const createWorkspace = ({ initialContainer, initialCanvas }) => {
+  const createWorkspace = ({
+    initialContainer,
+    initialCanvas,
+  }: {
+    initialContainer: HTMLDivElement;
+    initialCanvas: fabric.Canvas;
+  }) => {
     const initialWorkspace = new fabric.Rect({
       width: 1200,
       height: 900,
