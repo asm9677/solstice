@@ -142,13 +142,22 @@ const buildEditor = ({
     mintImage,
     reset: () => {
       localStorage.removeItem("autosave_canvas");
-      canvas.getObjects().forEach((obj) => {
-        if (obj.name !== "clip") {
+      let clip: fabric.Object | undefined;
+      canvas.getObjects().forEach((obj: fabric.Object) => {
+        if (obj.name === "clip") {
+          clip = obj;
+        } else {
           canvas.remove(obj);
         }
       });
 
+      if (clip) {
+        clip.set({
+          fill: "#FFFFFF", // 배경색 변경
+        });
+      }
       // 선택 해제 및 캔버스 다시 렌더링
+      canvas.clipPath = clip;
       canvas.discardActiveObject();
       canvas.requestRenderAll();
 
