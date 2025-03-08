@@ -10,7 +10,7 @@ import { cn, isTextType } from "@/lib/utils";
 import { ArrowDown, ArrowUp, ChevronDown, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaBold, FaItalic } from "react-icons/fa";
-import FontSizeInput from "@/hooks/font-size-input";
+import FontSizeInput from "@/components/font-size-input";
 import React, { useState } from "react";
 
 interface ToolbarProps {
