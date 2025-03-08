@@ -88,6 +88,9 @@ type BuildEditorProps = {
 };
 
 interface Editor {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  autoZoom: () => void;
   saveImage: (type: string) => void;
   saveJson: () => void;
   loadJson: (json: string) => void;

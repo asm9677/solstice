@@ -105,6 +105,25 @@ const buildEditor = ({
     canvas.setActiveObject(object);
   };
   return {
+    autoZoom,
+    zoomIn: () => {
+      let zoomRatio = canvas.getZoom();
+      zoomRatio += 0.05;
+      const center = canvas.getCenter();
+      canvas.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        zoomRatio > 1 ? 1 : zoomRatio,
+      );
+    },
+    zoomOut: () => {
+      let zoomRatio = canvas.getZoom();
+      zoomRatio -= 0.05;
+      const center = canvas.getCenter();
+      canvas.zoomToPoint(
+        new fabric.Point(center.left, center.top),
+        zoomRatio < 0.2 ? 0.2 : zoomRatio,
+      );
+    },
     saveImage,
     saveJson,
     loadJson,
@@ -423,7 +442,6 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       setIsSaved(false);
       saveToLocalStorage();
     };
-
     editor.canvas.on("object:modified", handleSave);
     editor.canvas.on("object:added", handleSave);
     editor.canvas.on("object:removed", handleSave);
