@@ -257,12 +257,14 @@ const buildEditor = ({
       return selectedObject.get("fontWeight") || FONT_WEIGHT;
     },
     addText: (value, options) => {
-      const object = new fabric.Textbox(value, {
-        ...TEXT_OPTIONS,
-        fill: fillColor,
-        ...options,
+      document.fonts.ready.then(() => {
+        const object = new fabric.Textbox(value, {
+          ...TEXT_OPTIONS,
+          fill: fillColor,
+          ...options,
+        });
+        addToCanvas(object);
       });
-      addToCanvas(object);
     },
     bringForward: () => {
       canvas.getActiveObjects().forEach((object) => {
