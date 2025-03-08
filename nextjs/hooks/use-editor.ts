@@ -414,7 +414,10 @@ const buildEditor = ({
 };
 const AUTO_SAVE_KEY = "autosave_canvas";
 
-export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
+export const useEditor = ({
+  clearSelectionCallback,
+  activeTool,
+}: EditorHookProps) => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -453,7 +456,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     strokeWidth,
     selectedObjects,
   ]);
-  useShortcut({ selectedObjects, editor });
+  useShortcut({ selectedObjects, editor, activeTool });
   const saveToLocalStorage = useCallback(() => {
     if (!editor?.canvas) return;
 

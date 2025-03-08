@@ -24,6 +24,7 @@ const Editor = () => {
   }, [activeTool]);
   const { init, isSaved, editor } = useEditor({
     clearSelectionCallback: onClearSelection,
+    activeTool,
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef(null);

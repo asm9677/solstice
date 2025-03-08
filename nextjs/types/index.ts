@@ -137,6 +137,7 @@ interface Editor {
 
 interface EditorHookProps {
   clearSelectionCallback?: () => void;
+  activeTool: ActiveTool;
 }
 
 const selectionDependentTools = [
