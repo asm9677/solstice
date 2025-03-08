@@ -32,7 +32,6 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
       width,
       height,
     });
-
     const zoom = zoomRatio * scale; // fit scale to zoom ratio 0.85
 
     canvas.setViewportTransform(fabric.iMatrix.concat()); // reset to original state before zooming
@@ -66,16 +65,10 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
 
   useEffect(() => {
     if (!canvas) return;
-
-    const handleWindowResize = () => {
-      console.log("handleWindowResize");
-      autoZoom();
-    };
-
-    window.addEventListener("resize", handleWindowResize);
+    window.addEventListener("resize", autoZoom);
 
     return () => {
-      window.removeEventListener("resize", handleWindowResize);
+      window.removeEventListener("resize", autoZoom);
     };
   }, [autoZoom, container, canvas]);
 

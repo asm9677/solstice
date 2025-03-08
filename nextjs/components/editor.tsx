@@ -30,7 +30,6 @@ const Editor = () => {
 
   const onChangeActiveTool = useCallback(
     (tool: ActiveTool) => {
-      console.log("clicked");
       if (tool === activeTool) {
         return setActiveTool("select");
       }

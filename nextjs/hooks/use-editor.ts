@@ -426,14 +426,14 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     selectedObjects,
   ]);
 
-  const saveToLocalStorage = () => {
+  const saveToLocalStorage = useCallback(() => {
     if (!editor?.canvas) return;
 
     const jsonData = editor.canvas.toJSON(JSON_KEYS);
     localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(jsonData));
 
     setIsSaved(true);
-  };
+  }, [editor?.canvas]);
 
   useEffect(() => {
     if (!editor?.canvas) return;
@@ -445,40 +445,15 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     editor.canvas.on("object:modified", handleSave);
     editor.canvas.on("object:added", handleSave);
     editor.canvas.on("object:removed", handleSave);
+    editor.canvas.on("selection:cleared", handleSave);
 
     return () => {
       editor.canvas.off("object:modified", handleSave);
       editor.canvas.off("object:added", handleSave);
       editor.canvas.off("object:removed", handleSave);
+      editor.canvas.off("selection:cleared", handleSave);
     };
-  }, [editor?.canvas]);
-
-  const loadFromLocalStorage = () => {
-    const savedData = localStorage.getItem(AUTO_SAVE_KEY);
-    if (savedData && editor?.canvas) {
-      const storedCanvas = editor.canvas.loadFromJSON(savedData, () => {
-        console.log("editor:canvas:", editor?.canvas);
-
-        const workspace = editor.canvas.getObjects().find((obj) => {
-          return obj.name === "clip";
-        });
-        if (workspace) {
-          console.log("workspace foudnd::", workspace);
-          workspace.set({
-            selectable: false,
-            hasControls: false,
-            evented: false,
-            hoverCursor: "default",
-          });
-          editor.canvas.centerObject(workspace);
-          editor.canvas.renderAll();
-        }
-
-        setIsSaved(true);
-      });
-      setCanvas(storedCanvas);
-    }
-  };
+  }, [saveToLocalStorage, editor?.canvas]);
 
   const removeSelectedObjects = useCallback(() => {
     if (!editor?.canvas) return;
@@ -494,10 +469,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   }, [editor?.canvas]);
 
   useEffect(() => {
-    console.log("hi");
-    // 키보드 이벤트 핸들러 추가
     const handleKeydown = (e: KeyboardEvent) => {
-      console.log();
       if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault(); // 기본 브라우저 동작 방지
         removeSelectedObjects();
@@ -512,9 +484,42 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     };
   }, [removeSelectedObjects]);
 
-  useEffect(() => {
-    loadFromLocalStorage();
-  }, [editor?.canvas]);
+  const createWorkspace = ({ initialContainer, initialCanvas }) => {
+    const initialWorkspace = new fabric.Rect({
+      width: 1200,
+      height: 900,
+      name: "clip",
+      hasControls: false,
+      selectable: false,
+      evented: false,
+      hoverCursor: "default",
+      fill: "#FFFFFF",
+      shadow: new fabric.Shadow({
+        color: "rgba(0, 0, 0, 0.5)",
+        blur: 5,
+      }),
+    });
+
+    fabric.Object.prototype.set({
+      cornerColor: "#FFF",
+      cornerStyle: "circle",
+      borderColor: "#3b82f6",
+      borderScaleFactor: 1.5,
+      transparentCorners: false,
+      borderOpacityWhenMoving: 1,
+      cornerStrokeColor: "#3b82f6",
+    });
+
+    initialCanvas.setWidth(initialContainer.offsetWidth);
+    initialCanvas.setHeight(initialContainer.offsetHeight);
+
+    initialCanvas.add(initialWorkspace);
+    initialCanvas.centerObject(initialWorkspace);
+    initialCanvas.clipPath = initialWorkspace;
+
+    setCanvas(initialCanvas);
+    setContainer(initialContainer);
+  };
 
   const init = useCallback(
     ({
@@ -524,39 +529,34 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       initialContainer: HTMLDivElement;
       initialCanvas: fabric.Canvas;
     }) => {
-      const initialWorkspace = new fabric.Rect({
-        width: 1200,
-        height: 900,
-        name: "clip",
-        hasControls: false,
-        selectable: false,
-        evented: false,
-        hoverCursor: "default",
-        fill: "#FFFFFF",
-        shadow: new fabric.Shadow({
-          color: "rgba(0, 0, 0, 0.5)",
-          blur: 5,
-        }),
-      });
+      const savedData = localStorage.getItem("autosave_canvas");
+      if (savedData) {
+        initialCanvas.loadFromJSON(savedData, () => {
+          const workspace = initialCanvas.getObjects().find((obj) => {
+            return obj.name === "clip";
+          });
+          if (workspace) {
+            console.log("workspace foudnd::", workspace);
+            workspace.set({
+              selectable: false,
+              hasControls: false,
+              evented: false,
+              hoverCursor: "default",
+            });
+            initialCanvas.setWidth(initialContainer.offsetWidth);
+            initialCanvas.setHeight(initialContainer.offsetHeight);
+            initialCanvas.centerObject(workspace);
+            setContainer(initialContainer);
+            initialCanvas.clipPath = workspace;
+            initialCanvas.renderAll();
+          }
 
-      fabric.Object.prototype.set({
-        cornerColor: "#FFF",
-        cornerStyle: "circle",
-        borderColor: "#3b82f6",
-        borderScaleFactor: 1.5,
-        transparentCorners: false,
-        borderOpacityWhenMoving: 1,
-        cornerStrokeColor: "#3b82f6",
-      });
-      initialCanvas.setWidth(initialContainer.offsetWidth);
-      initialCanvas.setHeight(initialContainer.offsetHeight);
-
-      initialCanvas.add(initialWorkspace);
-      initialCanvas.centerObject(initialWorkspace);
-      initialCanvas.clipPath = initialWorkspace;
-
-      setCanvas(initialCanvas);
-      setContainer(initialContainer);
+          setIsSaved(true);
+          setCanvas(initialCanvas);
+        });
+      } else {
+        createWorkspace({ initialContainer, initialCanvas });
+      }
     },
     [],
   );
