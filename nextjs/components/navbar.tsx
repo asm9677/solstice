@@ -154,210 +154,218 @@ const Navbar = ({
     }
   };
   return (
-      <>
-    <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
-      <Logo className={"w-28 h-16 relative shrink-0"} />
+    <>
+      <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
+        <Logo className={"w-28 h-16 relative shrink-0"} />
 
-      <div className="w-full flex items-center gap-x-1 h-full">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className="flex items-center text-sm">
-              File
-              <ChevronDown className="ml-2 size-4" />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align={"start"} className={"min-w-60"}>
-            <DropdownMenuItem onClick={() => openFilePicker()}>
-              <CiFileOn className="size-8" />
-              <div>
-                <p>Open</p>
-                <p className={"text-xs text-muted-foreground"}>
-                  Open a Json File
-                </p>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Separator orientation={"vertical"} className={"mx-2"} />
-        <Hint label={"Select"} side={"bottom"} sideOffset={10}>
-          <div
-            className={cn(
-              "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-              activeTool === "select" && "bg-gray-100",
-            )}
-            onClick={() => onChangeActiveTool("select")}
-          >
-            <MousePointerClick className={"size-4"} />
-          </div>
-        </Hint>{" "}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger>
-            <Hint
-              label={"Remove all and reset"}
-              side={"bottom"}
-              sideOffset={10}
-            >
-              <div
-                className={cn(
-                  "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-                )}
-              >
-                <Trash2 className={"size-4"} color={"red"} />
-              </div>
-            </Hint>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogTitle>Are you sure?</DialogTitle>
-            <DialogDescription>
-              This action will remove all objects from the canvas. This cannot
-              be undone.
-            </DialogDescription>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  editor?.reset();
-                  setOpen(false);
-                }}
-              >
-                Yes, Reset
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        <Separator orientation={"vertical"} className={"mx-2"} />
-        <div className="flex items-center gap-x-2">
-          {isSaved ? (
-            <>
-              <BsCloudCheck className={"size-[20px] text-green-500"} />
-              <div className="text-xs text-muted-foreground">Saved</div>
-            </>
-          ) : (
-            <>
-              <BsCloudSlash className={"size-[20px] text-red-500"} />
-              <div className="text-xs text-muted-foreground">Saving...</div>
-            </>
-          )}
-        </div>
-        <div className="ml-auto flex items-center gap-x-4">
-          {walletAddress && (
-            <Hint
-              label="Upload image on Solana network"
-              side="bottom"
-              sideOffset={5}
-            >
-              <Button onClick={onClickMint}>
-                Mint <Upload className={"size-4"} />
-              </Button>
-            </Hint>
-          )}
-          <DropdownMenu modal={false}>
+        <div className="w-full flex items-center gap-x-1 h-full">
+          <DropdownMenu>
             <DropdownMenuTrigger>
-              <div className="flex items-center text-sm">
-                Export
-                <Download className={"size-4 ml-4"} />
-              </div>
+              <Button variant={"ghost"}>
+                File
+                <ChevronDown className="ml-2 size-4" />
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align={"end"} className={"min-w-60"}>
-              <DropdownMenuItem
-                className={"flex items-center gap-x-2"}
-                onClick={() => editor?.saveJson()}
-              >
+            <DropdownMenuContent align={"start"} className={"min-w-60"}>
+              <DropdownMenuItem onClick={() => openFilePicker()}>
                 <CiFileOn className="size-8" />
                 <div>
-                  <p>JSON</p>
+                  <p>Open</p>
                   <p className={"text-xs text-muted-foreground"}>
-                    Save for later editing
-                  </p>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={"flex items-center gap-x-2"}
-                onClick={() => editor?.saveImage("png")}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>PNG</p>
-                  <p className={"text-xs text-muted-foreground"}>
-                    Best for sharing on the web
-                  </p>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className={"flex items-center gap-x-2"}
-                onClick={() => editor?.saveImage("svg")}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>SVG</p>
-                  <p className={"text-xs text-muted-foreground"}>
-                    Best for editing in vector software
-                  </p>
-                </div>
-              </DropdownMenuItem>{" "}
-              <DropdownMenuItem
-                className={"flex items-center gap-x-2"}
-                onClick={() => editor?.saveImage("webp")}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>WebP</p>
-                  <p className={"text-xs text-muted-foreground"}>
-                    Best for quality & compression
-                  </p>
-                </div>
-              </DropdownMenuItem>{" "}
-              <DropdownMenuItem
-                className={"flex items-center gap-x-2"}
-                onClick={() => editor?.saveImage("jpg")}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>JPG</p>
-                  <p className={"text-xs text-muted-foreground"}>
-                    Best for printing
+                    Open a Json File
                   </p>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {walletAddress ? (
-            <Menubar>
-              <MenubarMenu>
-                <MenubarTrigger>
-                  <div className="flex items-center gap-x-2">
-                    <WalletMinimal /> {walletAddress.slice(0, 4)}..
-                    {walletAddress.slice(-4)}
+          <Separator orientation={"vertical"} className={"mx-2"} />
+          <Hint label={"Select"} side={"bottom"} sideOffset={10}>
+            <div
+              className={cn(
+                "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
+                activeTool === "select" && "bg-gray-100",
+              )}
+              onClick={() => onChangeActiveTool("select")}
+            >
+              <MousePointerClick className={"size-4"} />
+            </div>
+          </Hint>{" "}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>
+              <Hint
+                label={"Remove all and reset"}
+                side={"bottom"}
+                sideOffset={10}
+              >
+                <div
+                  className={cn(
+                    "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
+                  )}
+                >
+                  <Trash2 className={"size-4"} color={"red"} />
+                </div>
+              </Hint>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogDescription>
+                This action will remove all objects from the canvas. This cannot
+                be undone.
+              </DialogDescription>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    editor?.reset();
+                    setOpen(false);
+                  }}
+                >
+                  Yes, Reset
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Separator orientation={"vertical"} className={"mx-2"} />
+          <div className="flex items-center gap-x-2">
+            {isSaved ? (
+              <>
+                <BsCloudCheck className={"size-[20px] text-green-500"} />
+                <div className="text-xs text-muted-foreground">Saved</div>
+              </>
+            ) : (
+              <>
+                <BsCloudSlash className={"size-[20px] text-red-500"} />
+                <div className="text-xs text-muted-foreground">Saving...</div>
+              </>
+            )}
+          </div>
+          <div className="ml-auto flex items-center gap-x-4">
+            {walletAddress && (
+              <Hint
+                label="Upload image on Solana network"
+                side="bottom"
+                sideOffset={5}
+              >
+                <Button onClick={onClickMint}>
+                  Mint <Upload className={"size-4"} />
+                </Button>
+              </Hint>
+            )}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger>
+                <Hint
+                  label="Export as JSON / PNG / SVG / WebP / JPG"
+                  side="bottom"
+                  sideOffset={5}
+                >
+                  <Button className="hover:bg-gray-100" variant={"ghost"}>
+                    Export
+                    <Download className={"size-4"} />
+                  </Button>
+                </Hint>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align={"end"} className={"min-w-60"}>
+                <DropdownMenuItem
+                  className={"flex items-center gap-x-2"}
+                  onClick={() => editor?.saveJson()}
+                >
+                  <CiFileOn className="size-8" />
+                  <div>
+                    <p>JSON</p>
+                    <p className={"text-xs text-muted-foreground"}>
+                      Save for later editing
+                    </p>
                   </div>
-                </MenubarTrigger>
-                <MenubarContent>
-                  <MenubarItem>
-                    <div
-                      className={"w-full flex items-center justify-between"}
-                      onClick={disconnectWallet}
-                    >
-                      Disconnect
-                      <LogOut />
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={"flex items-center gap-x-2"}
+                  onClick={() => editor?.saveImage("png")}
+                >
+                  <CiFileOn className="size-8" />
+                  <div>
+                    <p>PNG</p>
+                    <p className={"text-xs text-muted-foreground"}>
+                      Best for sharing on the web
+                    </p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className={"flex items-center gap-x-2"}
+                  onClick={() => editor?.saveImage("svg")}
+                >
+                  <CiFileOn className="size-8" />
+                  <div>
+                    <p>SVG</p>
+                    <p className={"text-xs text-muted-foreground"}>
+                      Best for editing in vector software
+                    </p>
+                  </div>
+                </DropdownMenuItem>{" "}
+                <DropdownMenuItem
+                  className={"flex items-center gap-x-2"}
+                  onClick={() => editor?.saveImage("webp")}
+                >
+                  <CiFileOn className="size-8" />
+                  <div>
+                    <p>WebP</p>
+                    <p className={"text-xs text-muted-foreground"}>
+                      Best for quality & compression
+                    </p>
+                  </div>
+                </DropdownMenuItem>{" "}
+                <DropdownMenuItem
+                  className={"flex items-center gap-x-2"}
+                  onClick={() => editor?.saveImage("jpg")}
+                >
+                  <CiFileOn className="size-8" />
+                  <div>
+                    <p>JPG</p>
+                    <p className={"text-xs text-muted-foreground"}>
+                      Best for printing
+                    </p>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {walletAddress ? (
+              <Menubar>
+                <MenubarMenu>
+                  <MenubarTrigger>
+                    <div className="flex items-center gap-x-2">
+                      <WalletMinimal /> {walletAddress.slice(0, 4)}..
+                      {walletAddress.slice(-4)}
                     </div>
-                  </MenubarItem>
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
-          ) : (
-            <Button variant={"outline"} onClick={connectWallet}>
-              Connect Wallet
-            </Button>
-          )}
+                  </MenubarTrigger>
+                  <MenubarContent>
+                    <MenubarItem>
+                      <div
+                        className={"w-full flex items-center justify-between"}
+                        onClick={disconnectWallet}
+                      >
+                        Disconnect
+                        <LogOut />
+                      </div>
+                    </MenubarItem>
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
+            ) : (
+              <Button variant={"outline"} onClick={connectWallet}>
+                Connect Wallet
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>   <MintModal
-      mintModalOpen={mintModalOpen}
-      setMintModalOpen={setMintModalOpen}
-      imageUrl={imageUrl}
-  /></>
+      </nav>
+      <MintModal
+        mintModalOpen={mintModalOpen}
+        setMintModalOpen={setMintModalOpen}
+        imageUrl={imageUrl}
+      />
+    </>
   );
 };
 
