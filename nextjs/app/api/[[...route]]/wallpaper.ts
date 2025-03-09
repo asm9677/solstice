@@ -2,22 +2,24 @@ import { Hono } from "hono";
 import { unsplash } from "@/lib/unsplash";
 
 const DEFAULT_COUNT = 50;
-const DEFAULT_COLELCTION_IDS = ["317099"];
+const DEFAULT_COLLECTION_IDS = ["317099"];
 
 const app = new Hono().get("/", async (c) => {
-  console.log("is images.ts");
   const images = await unsplash.photos.getRandom({
-    collectionIds: DEFAULT_COLELCTION_IDS,
+    collectionIds: DEFAULT_COLLECTION_IDS,
     count: DEFAULT_COUNT,
   });
+
   if (images.errors) {
     return c.json({ error: "Something went wrong" }, 400);
   }
 
   let response = images.response;
+
   if (!Array.isArray(response)) {
     response = [response];
   }
+
   return c.json({ data: response });
 });
 

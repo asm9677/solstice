@@ -1,13 +1,13 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
-import images from "./images";
+import wallpaper from "./wallpaper";
 // Revert to "edge" if planning on running on the edge
 export const runtime = "nodejs";
 
 const app = new Hono().basePath("/api");
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const routes = app.route("/images", images);
+const routes = app.route("/wallpaper", wallpaper);
 
 export const GET = handle(app);
 
