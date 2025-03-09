@@ -6,6 +6,7 @@ import {
   MousePointerClick,
   WalletMinimal,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useFilePicker } from "use-file-picker";
 import Logo from "@/components/logo";
@@ -225,7 +226,17 @@ const Navbar = ({
           )}
         </div>
         <div className="ml-auto flex items-center gap-x-4">
-          {walletAddress && <button onClick={onClickMint}>Mint</button>}
+          {walletAddress && (
+            <Hint
+              label="Upload image on Solana network"
+              side="bottom"
+              sideOffset={5}
+            >
+              <Button onClick={onClickMint}>
+                Mint <Upload className={"size-4"} />
+              </Button>
+            </Hint>
+          )}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger>
               <div className="flex items-center text-sm">
