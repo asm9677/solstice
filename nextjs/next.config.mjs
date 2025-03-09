@@ -9,12 +9,12 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "141.164.44.11",
+        hostname: "solstice-api.kro.kr",
         port: "5000",
         pathname: "/api/image/**",
       },
     ],
-    domains: ["141.164.44.11"],
+    domains: ["solstice-api.kro.kr"],
   },
 };
 
