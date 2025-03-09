@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const Logo = () => {
+const Logo = ({ className }: { className: string }) => {
   return (
     <Link href={"/"}>
-      <div className="w-28 h-16 relative shrink-0">
+      <div className={className}>
         <Image
           priority={true}
           src={"/logo.svg"}

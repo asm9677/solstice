@@ -57,7 +57,6 @@ const Navbar = ({
 }: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-
   const { openFilePicker } = useFilePicker({
     accept: ".json",
     onFilesSuccessfullySelected: ({ plainFiles }: any) => {
@@ -137,10 +136,9 @@ const Navbar = ({
       console.error("파일 업로드 실패:", error);
     }
   };
-
   return (
     <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
-      <Logo />
+      <Logo className={"w-28 h-16 relative shrink-0"} />
 
       <div className="w-full flex items-center gap-x-1 h-full">
         <DropdownMenu>
@@ -174,9 +172,13 @@ const Navbar = ({
             <MousePointerClick className={"size-4"} />
           </div>
         </Hint>{" "}
-        <Hint label={"Remove all and reset"} side={"bottom"} sideOffset={10}>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger>
+            <Hint
+              label={"Remove all and reset"}
+              side={"bottom"}
+              sideOffset={10}
+            >
               <div
                 className={cn(
                   "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
@@ -184,30 +186,30 @@ const Navbar = ({
               >
                 <Trash2 className={"size-4"} color={"red"} />
               </div>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogTitle>Are you sure?</DialogTitle>
-              <DialogDescription>
-                This action will remove all objects from the canvas. This cannot
-                be undone.
-              </DialogDescription>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    editor?.reset();
-                    setOpen(false);
-                  }}
-                >
-                  Yes, Reset
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </Hint>
+            </Hint>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action will remove all objects from the canvas. This cannot
+              be undone.
+            </DialogDescription>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  editor?.reset();
+                  setOpen(false);
+                }}
+              >
+                Yes, Reset
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         <Separator orientation={"vertical"} className={"mx-2"} />
         <div className="flex items-center gap-x-2">
           {isSaved ? (
