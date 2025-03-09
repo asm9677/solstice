@@ -13,10 +13,8 @@ import {
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { Wallet } from "@coral-xyz/anchor";
 import connection from "./connect.js";
-import { Buffer } from "buffer";
-import bs58 from "bs58";
 
-const NONCE_ACCOUNTS_FILE = "/home/asm/solstice/scripts/accounts/nonceAccounts.json";
+const NONCE_ACCOUNTS_FILE = "/root/solstice/scripts/accounts/nonceAccounts.json";
 
 const secretKey = Uint8Array.from(
     JSON.parse(await fs.readFile(`${process.env.HOME}/.config/solana/id.json`, "utf8"))

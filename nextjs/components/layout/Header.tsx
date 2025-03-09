@@ -1,5 +1,6 @@
 // "use client";
 
+<<<<<<< HEAD
 // import { FC, useEffect, useState } from "react";
 // import { FaCrown } from "react-icons/fa";
 // import { FiEdit3 } from "react-icons/fi";
@@ -13,12 +14,33 @@
 // import ExpandIcon from "../SidebarIcon/ExpandIcon";
 // import { useLayoutContext } from "@/context/LayoutContext";
 // import { useWalletContext } from "@/context/WalletContext";
+=======
+import { FC, useEffect, useState } from "react";
+import { FaCrown } from "react-icons/fa";
+import { FiEdit3 } from "react-icons/fi";
+import { IoIosArrowDown } from "react-icons/io";
+import { BsRecordCircleFill } from "react-icons/bs";
+import { FaChartBar } from "react-icons/fa";
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
+import { FaShoppingCart } from "react-icons/fa";
+import { LuUpload } from "react-icons/lu";
+import { MdAccountBalanceWallet, MdSaveAlt } from "react-icons/md";
+import ExpandIcon from "../SidebarIcon/ExpandIcon";
+import { useLayoutContext } from "@/context/LayoutContext";
+import { useWalletContext } from "@/context/WalletContext";
+>>>>>>> e73e5cf28419f00af63b90c9628b2b8bfced7c5f
 
 // const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
+<<<<<<< HEAD
 // const Header: FC = () => {
 //   const {walletAddress, setWalletAddress} = useWalletContext();
 //   const {isSidebarOpen, setIsSidebarOpen} = useLayoutContext();
+=======
+const Header: FC = () => {
+  const {walletAddress, setWalletAddress} = useWalletContext();
+  const {isSidebarOpen, setIsSidebarOpen} = useLayoutContext();
+>>>>>>> e73e5cf28419f00af63b90c9628b2b8bfced7c5f
 
 //   const connectWallet = async () => {
 //     try {
