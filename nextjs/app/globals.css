@@ -178,7 +178,7 @@ html, body {
     width: 100%;
     height: 100vh;
     background-image: url("/mesh.svg");
-    background-size: auto;
+    background-size: cover;
     filter: saturate(110%) brightness(70%) contrast(300%);
     animation: waveAnimation 8s infinite ease-in-out,
     shineAnimation 5s infinite ease-in-out;
