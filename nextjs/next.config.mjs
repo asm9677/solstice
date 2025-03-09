@@ -8,7 +8,7 @@ const nextConfig = {
         hostname: "utfs.io",
       },
       {
-        protocol: "http",
+        protocol: "https",
         hostname: "141.164.44.11",
         port: "5000",
         pathname: "/api/image/**",
