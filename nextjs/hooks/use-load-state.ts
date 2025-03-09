@@ -1,4 +1,3 @@
-"use client";
 import { fabric } from "fabric";
 import { useEffect, useRef } from "react";
 
@@ -9,9 +8,16 @@ interface UseLoadStateProps {
 
 export const useLoadState = ({ canvas, autoZoom }: UseLoadStateProps) => {
   const initialized = useRef(false);
-  const initialState = useRef<string | undefined>(
-    localStorage.getItem("autosave_canvas"),
-  );
+  const initialState = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      initialState.current =
+        localStorage.getItem("autosave_canvas") || undefined;
+    }
+  }, []);
+
+  useEffect(() => {}, []);
   useEffect(() => {
     if (!initialized.current && initialState?.current && canvas) {
       const data = JSON.parse(initialState.current);
