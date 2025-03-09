@@ -6,6 +6,7 @@ import {
   MousePointerClick,
   WalletMinimal,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useFilePicker } from "use-file-picker";
 import Logo from "@/components/logo";
@@ -152,19 +153,18 @@ const Navbar = ({
       console.error("파일 업로드 실패:", error);
     }
   };
-
   return (
     <>
       <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
-        <Logo />
+        <Logo className={"w-28 h-16 relative shrink-0"} />
 
         <div className="w-full flex items-center gap-x-1 h-full">
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <div className="flex items-center text-sm">
+              <Button variant={"ghost"}>
                 File
                 <ChevronDown className="ml-2 size-4" />
-              </div>
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align={"start"} className={"min-w-60"}>
               <DropdownMenuItem onClick={() => openFilePicker()}>
@@ -183,47 +183,51 @@ const Navbar = ({
             <div
               className={cn(
                 "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
-                activeTool === "select" && "bg-gray-100"
+                activeTool === "select" && "bg-gray-100",
               )}
               onClick={() => onChangeActiveTool("select")}
             >
               <MousePointerClick className={"size-4"} />
             </div>
           </Hint>{" "}
-          <Hint label={"Remove all and reset"} side={"bottom"} sideOffset={10}>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger>
+              <Hint
+                label={"Remove all and reset"}
+                side={"bottom"}
+                sideOffset={10}
+              >
                 <div
                   className={cn(
-                    "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer"
+                    "p-2 rounded-md bg-transparent hover:bg-gray-100 active:bg-gray-200 transition duration-200 cursor-pointer",
                   )}
                 >
                   <Trash2 className={"size-4"} color={"red"} />
                 </div>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Are you sure?</DialogTitle>
-                <DialogDescription>
-                  This action will remove all objects from the canvas. This
-                  cannot be undone.
-                </DialogDescription>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      editor?.reset();
-                      setOpen(false);
-                    }}
-                  >
-                    Yes, Reset
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </Hint>
+              </Hint>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <DialogDescription>
+                This action will remove all objects from the canvas. This cannot
+                be undone.
+              </DialogDescription>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    editor?.reset();
+                    setOpen(false);
+                  }}
+                >
+                  Yes, Reset
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <Separator orientation={"vertical"} className={"mx-2"} />
           <div className="flex items-center gap-x-2">
             {isSaved ? (
@@ -239,13 +243,29 @@ const Navbar = ({
             )}
           </div>
           <div className="ml-auto flex items-center gap-x-4">
-            {walletAddress && <button onClick={onClickMint}>Mint</button>}
+            {walletAddress && (
+              <Hint
+                label="Upload image on Solana network"
+                side="bottom"
+                sideOffset={5}
+              >
+                <Button onClick={onClickMint}>
+                  Mint <Upload className={"size-4"} />
+                </Button>
+              </Hint>
+            )}
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger>
-                <div className="flex items-center text-sm">
-                  Export
-                  <Download className={"size-4 ml-4"} />
-                </div>
+                <Hint
+                  label="Export as JSON / PNG / SVG / WebP / JPG"
+                  side="bottom"
+                  sideOffset={5}
+                >
+                  <Button className="hover:bg-gray-100" variant={"ghost"}>
+                    Export
+                    <Download className={"size-4"} />
+                  </Button>
+                </Hint>
               </DropdownMenuTrigger>
               <DropdownMenuContent align={"end"} className={"min-w-60"}>
                 <DropdownMenuItem
