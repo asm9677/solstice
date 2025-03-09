@@ -35,7 +35,8 @@ const TemplateSidebar = ({
         throw new Error("Failed to fetch JSON file");
       }
       const data = await response.json();
-
+      console.log("handle load template");
+      console.log({ editor });
       editor?.loadJson(JSON.stringify(data));
     } catch (error) {
       console.error("Error loading template:", error);

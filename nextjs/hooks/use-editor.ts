@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BuildEditorProps,
   CIRCLE_OPTIONS,
@@ -28,6 +28,7 @@ import {
 } from "@/lib/utils";
 import useWindowEvents from "@/hooks/use-window-events";
 import useShortcut from "@/hooks/use-shortcut";
+import { useLoadState } from "@/hooks/use-load-state";
 
 const buildEditor = ({
   canvas,
@@ -76,18 +77,43 @@ const buildEditor = ({
     downloadJson(fileString);
   };
   const loadJson = (json: string) => {
-    const data = JSON.parse(json);
+    const existingJson = localStorage.getItem("autosave_canvas");
+    if (existingJson) {
+      localStorage.removeItem("autosave_canvas");
+      let clip: fabric.Object | undefined;
+      canvas.getObjects().forEach((obj: fabric.Object) => {
+        if (obj.name === "clip") {
+          clip = obj;
+        } else {
+          canvas.remove(obj);
+        }
+      });
 
+      if (clip) {
+        clip.set({
+          fill: "#FFFFFF", // 배경색 변경
+        });
+      }
+      // 선택 해제 및 캔버스 다시 렌더링
+      canvas.clipPath = clip;
+      canvas.discardActiveObject();
+
+      // 캔버스 배경색 유지 (예: 흰색 Hex 값 설정)
+      canvas.backgroundColor = "#FFFFFF";
+    }
+    const data = JSON.parse(json);
     canvas.loadFromJSON(data, autoZoom);
   };
 
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
+
   const center = (object: fabric.Object) => {
     const workspace = getWorkspace();
     const center = workspace?.getCenterPoint();
     if (!center) return;
+
     // @ts-expect-error-error
     canvas._centerObject(object, center);
   };
@@ -105,6 +131,7 @@ const buildEditor = ({
     canvas.add(object);
     canvas.setActiveObject(object);
   };
+
   return {
     autoZoom,
     zoomIn: () => {
@@ -426,11 +453,17 @@ export const useEditor = ({
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
   const [fontFamily, setFontFamily] = useState(FONT_FAMILY);
   const [fillColor, setFillColor] = useState(FILL_COLOR);
+
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeColor, setStrokeColor] = useState(STROKE_COLOR);
   const [isSaved, setIsSaved] = useState(true);
 
   const { autoZoom } = useAutoResize({ canvas, container });
+  useLoadState({
+    canvas,
+    autoZoom,
+  });
+
   useWindowEvents();
   useCanvasEvents({ canvas, setSelectedObjects, clearSelectionCallback });
   const editor = useMemo(() => {
@@ -502,7 +535,6 @@ export const useEditor = ({
       name: "clip",
       hasControls: false,
       selectable: false,
-      evented: false,
       hoverCursor: "default",
       fill: "#FFFFFF",
       shadow: new fabric.Shadow({
@@ -531,30 +563,6 @@ export const useEditor = ({
     setCanvas(initialCanvas);
     setContainer(initialContainer);
   };
-  const fixObjectPositions = (
-    canvas: fabric.Canvas,
-    workspace: fabric.Rect | undefined,
-  ) => {
-    if (!workspace) return;
-
-    const workspaceCenter = workspace.getCenterPoint();
-
-    canvas.getObjects().forEach((obj) => {
-      if (obj.name !== "clip") {
-        const objCenter = obj.getCenterPoint();
-        const deltaX = workspaceCenter.x - objCenter.x;
-        const deltaY = workspaceCenter.y - objCenter.y;
-
-        obj.set({
-          left: obj.left! + deltaX,
-          top: obj.top! + deltaY,
-        });
-        obj.setCoords();
-      }
-    });
-
-    canvas.renderAll();
-  };
 
   const init = useCallback(
     ({
@@ -564,36 +572,8 @@ export const useEditor = ({
       initialContainer: HTMLDivElement;
       initialCanvas: fabric.Canvas;
     }) => {
-      // const savedData = null;
-      const savedData = localStorage.getItem("autosave_canvas");
-      if (savedData) {
-        initialCanvas.loadFromJSON(savedData, () => {
-          const workspace = initialCanvas.getObjects().find((obj) => {
-            return obj.name === "clip";
-          });
-          if (workspace) {
-            workspace.set({
-              selectable: false,
-              hasControls: false,
-              evented: false,
-              hoverCursor: "default",
-            });
-            initialCanvas.setWidth(initialContainer.offsetWidth);
-            initialCanvas.setHeight(initialContainer.offsetHeight);
-            initialCanvas.setViewportTransform(fabric.iMatrix.concat());
-            initialCanvas.centerObject(workspace);
-            setContainer(initialContainer);
-            initialCanvas.clipPath = workspace;
-            // fixObjectPositions(canvas, workspace);
-            initialCanvas.renderAll();
-          }
-
-          setIsSaved(true);
-          setCanvas(initialCanvas);
-        });
-      } else {
-        createWorkspace({ initialContainer, initialCanvas });
-      }
+      // 기존의 autosave_canvas local storage data가 있는 경우
+      createWorkspace({ initialContainer, initialCanvas });
     },
     [],
   );
