@@ -1,27 +1,27 @@
-"use client";
-import { FC } from "react";
-import Header from "./Header";
-import Sidebar from "./sidebar";
-import Main from "./Main";
-import SidebarMenu from "./SidebarMenu";
-import { useLayoutContext } from "../../context/LayoutContext";
+// "use client";
+// import { FC } from "react";
+// import Header from "./Header";
+// import Sidebar from "./sidebar";
+// import Main from "./Main";
+// import SidebarMenu from "./SidebarMenu";
+// import { useLayoutContext } from "../../context/LayoutContext";
 
-const Layout: FC = () => {
-  const { isSidebarOpen } = useLayoutContext();
-  // onClick={() => setIsSidebarOpen(!isSidebarOpen) }
-  return (
-    <>
-      <div className="flex flex-col h-screen">
-        <Header />
-        <div className="flex flex-row w-full h-full">
-          <Sidebar />
+// const Layout: FC = () => {
+//   const { isSidebarOpen } = useLayoutContext();
+//   // onClick={() => setIsSidebarOpen(!isSidebarOpen) }
+//   return (
+//     <>
+//       <div className="flex flex-col h-screen">
+//         <Header />
+//         <div className="flex flex-row w-full h-full">
+//           <Sidebar />
 
-          {isSidebarOpen && <SidebarMenu />}
-          <Main />
-        </div>
-      </div>
-    </>
-  );
-};
+//           {isSidebarOpen && <SidebarMenu />}
+//           <Main />
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
 
-export default Layout;
+// export default Layout;

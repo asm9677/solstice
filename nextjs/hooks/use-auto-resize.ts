@@ -28,7 +28,7 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
       console.warn("⚠️ localWorkspace (clip object) not found!");
       return;
     }
-    const scale = fabric.util.findScaleToFit(localWorkspace, {
+    const scale = (fabric.util as any).findScaleToFit(localWorkspace, {
       width,
       height,
     });
@@ -64,8 +64,8 @@ export const useAutoResize = ({ canvas, container }: UseAutoResizeProps) => {
       canvas.getObjects().forEach((obj) => {
         if (obj.name !== "clip") {
           // 원래 workspace 대비 상대적 위치 유지
-          const originalLeft = obj.get("originalLeft");
-          const originalTop = obj.get("originalTop");
+          const originalLeft = obj.get("originalLeft" as any);
+          const originalTop = obj.get("originalTop" as any);
 
           if (originalLeft !== undefined && originalTop !== undefined) {
             obj.set({
