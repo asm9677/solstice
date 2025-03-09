@@ -40,8 +40,7 @@ const ImageSidebar = ({
         <UploadButton
           endpoint={"imageUploader"}
           onClientUploadComplete={(res) => {
-            console.log(res);
-            editor?.addImage(res[0].url);
+            editor?.addImage(res[0].ufsUrl);
           }}
           appearance={{
             button: "w-full text-sm font-medium",
@@ -78,6 +77,7 @@ const ImageSidebar = ({
                 >
                   <Image
                     fill
+                    sizes={"100%"}
                     src={image.urls.small}
                     alt={image.alt_description || "Image"}
                     className={"object-cover "}
