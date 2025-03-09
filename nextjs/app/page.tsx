@@ -12,18 +12,21 @@ const Page = () => {
           <div className="flex flex-col items-center justify-center mt-[200px] items-center gap-4">
             <Logo className="w-[310px] h-[208px] relative" />
             <div className="mt-auto flex flex-col items-center gap-4 font-[family-name:var(--font-karla)]">
-              <p className={"text-center text-4xl leading-relaxed"}>
-                Create and mint your business card on Solana{" "}
-                <span className={"font-bold text-gray-950 "}>
-                  <br />– faster than ever.
-                </span>{" "}
-                <br />
-                A simple and intuitive tool
-                <br /> to design, personalize, and securely store your card
-                on-chain. <br />
-                Experience 100 times faster saving transactions through parallel
-                processing
-              </p>
+              <div className={"text-center text-4xl leading-relaxed"}>
+                <h1 className={"text-[48px] mb-[24px]"}>
+                  Create and mint canvas artwork on Solana
+                </h1>
+                <p>With a simple and intuitive canvas tool</p>
+                <p>to craft and securely store your NFT on-chain. </p>
+                <p
+                  className={
+                    "flex gap-x-2 justify-center font-bold text-gray-950 "
+                  }
+                >
+                  Experience 100 times faster speed and low cost
+                </p>
+                through parallel processing technology.
+              </div>
               <Link href={"/editor"}>
                 <Button
                   className={
