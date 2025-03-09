@@ -17,3 +17,6 @@ app.use("/uploads", express.static("public/uploads"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+// nohup node server.js > server.log 2>&1 &
+// nohup solana-test-validator --limit-ledger-size 50000000 > /dev/null 2>&1 &

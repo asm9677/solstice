@@ -5,7 +5,7 @@ import { Connection, clusterApiUrl } from "@solana/web3.js";
 // const connection = new Connection("https://solana-devnet.g.alchemy.com/v2/IyQ88uzd45S79rwOCwTytngBczFusrrH", {
 const connection = new Connection("http://localhost:8899", {
     commitment: "confirmed",
-    confirmTransactionInitialTimeout: 2000, // 2초
+    confirmTransactionInitialTimeout: 2000, // 3초
 });
 
 export default connection;

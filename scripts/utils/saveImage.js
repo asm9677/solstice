@@ -15,8 +15,9 @@ import { loadNonceAccountsPool } from "./nonceAccout.js";
 import bs58 from "bs58";
 import { deserializeImageChunkTransaction, readImage, saveImage, splitIntoChunks } from "./imageChunk.js";
 import connection from "./connect.js";
+import { connect } from "http2";
 
-const BATCH_SIZE = 50; // 한 배치당 nonce 계정 15개 사용
+const BATCH_SIZE = 100; // 한 배치당 nonce 계정 100개 사용
 
 const secretKey = Uint8Array.from(
     JSON.parse(await fs.readFile(`${process.env.HOME}/.config/solana/id.json`, "utf8"))
@@ -30,7 +31,7 @@ const provider = new AnchorProvider(connection, wallet, {
     confirmTransactionInitialTimeout: 2000,
 });
 
-const programId = new PublicKey("EsjGSxfqv9jtBDWmUpPypj58uatCaqppPD7sCULujXAu");
+const programId = new PublicKey("3MSq9t7vHFU5EsoZxuCHgzN5TMvFiXAwwirP1q7C2Fy4");
 const program = new Program(idl, provider);
 
 async function createTransactionsForImageChunk(imageChunks, nonceAccountsPool) {
@@ -121,6 +122,14 @@ const sendImageChunks = async (path) => {
                     })
                 }
                 console.log(`✅ 트랜잭션 ${idx} 성공:`);
+                // const tmp = connection.getTransaction(signature, {
+                //     commitment: "confirmed",
+                //     maxSupportedTransactionVersion: 0
+                // })
+
+                // if (!tmp) {
+                //     console.log(idx, "실패")
+                // }
             } else {
                 queue.push({
                     idx,
@@ -157,6 +166,10 @@ const updateCardPDA = async (user, txHash, fileExt) => {
         programId
     );
 
+    // 9F7rzdWdnM9qjcEyBXdPNDZ9ZV72GEiZDxiNCs1p8DuZ 5y6pncrcURd4RpM5Qk8Q88Bre2o2rKcwSYVocSwSdnN1 2BU9d4LiBhEsNKrqyo51yuWVSCvixXfvRdqJ3wzk3RnhUYnRD6G8WYujfFJKhRoAWPrDs2pCvVGSnxNXjwuycV1Y png
+    // 9F7rzdWdnM9qjcEyBXdPNDZ9ZV72GEiZDxiNCs1p8DuZ 5y6pncrcURd4RpM5Qk8Q88Bre2o2rKcwSYVocSwSdnN1 2FVzpicdkWfZuf441yY66D1BTNeMqftMzEg4NNgvgmpb2XxErC7Ymywpus83hsiCtfXatHCxgFGrtbnqJFo3njn9 jpeg
+
+    console.log(cardPDA.toBase58(), userPublicKey.toBase58(), txHash, fileExt)
     const tx = await program.methods
         .updateCard(userPublicKey, txHash, fileExt)
         .accounts({ owner: owner.publicKey, user: userPublicKey, cardAccount: cardPDA })
@@ -192,23 +205,26 @@ const buildImageChunks = async (imageChunks, index, txHash) => {
     if (!txHash) {
         return;
     }
+    try {
+        const txInfo = await connection.getTransaction(txHash, {
+            commitment: "confirmed",
+            maxSupportedTransactionVersion: 0
+        });
 
-    const txInfo = await connection.getTransaction(txHash, {
-        commitment: "confirmed",
-        maxSupportedTransactionVersion: 0
-    });
+        const base58Data = txInfo.transaction.message.instructions[1].data;
+        const decodedData = bs58.decode(base58Data);
+        const buffer = Buffer.from(decodedData);
+        const deserialized = deserializeImageChunkTransaction(buffer);
+        // console.log("index : ", index);
 
-    console.log(txInfo)
-
-    const base58Data = txInfo.transaction.message.instructions[1].data;
-    const decodedData = bs58.decode(base58Data);
-    const buffer = Buffer.from(decodedData);
-    const deserialized = deserializeImageChunkTransaction(buffer);
-    // console.log("index : ", index);
-
-    imageChunks[index] = deserialized.chunkData;
-    await buildImageChunks(imageChunks, index * 2 + 1, deserialized.childHash1);
-    await buildImageChunks(imageChunks, index * 2 + 2, deserialized.childHash2);
+        imageChunks[index] = deserialized.chunkData;
+        await buildImageChunks(imageChunks, index * 2 + 1, deserialized.childHash1);
+        await buildImageChunks(imageChunks, index * 2 + 2, deserialized.childHash2);
+    }
+    catch (e) {
+        console.log(index, txHash)
+        console.log("error : ", e);
+    }
 }
 
 async function saveImageFromSignature(path) {

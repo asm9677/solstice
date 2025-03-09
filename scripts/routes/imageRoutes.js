@@ -2,7 +2,7 @@ import express from "express";
 import upload from "../middlewares/upload.js";
 import db from "../config/db.js";
 import verifySignature from "../utils/verifySignature.js";
-import { sendEvent } from "../utils/scheduler.js";
+import { getCard, getPda, sendEvent } from "../utils/scheduler.js";
 
 const router = express.Router();
 
@@ -72,6 +72,28 @@ router.get("/upload/:address", (req, res) => {
             uploaded_at: row.created_at,
         });
     });
+});
+
+router.get("/:address", (req, res) => {
+    const address = req.params.address;
+
+    getCard(address).then((path) => {
+        if (path) {
+            res.sendFile(`${process.env.HOME}/solstice/${path}`);
+        } else {
+            res.status(404).json({ error: "이미지를 찾을 수 없습니다." });
+        }
+    });
+});
+
+router.get("/pda/:address", (req, res) => {
+    const address = req.params.address;
+
+    getPda(address).then((pda) => {
+        res.json(pda);
+    }).catch((err) => {
+        res.status(404).json({ error: "Not Found" });
+    })
 });
 
 export default router;
