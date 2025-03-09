@@ -22,9 +22,33 @@ const quicksand = Quicksand({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Solstice",
-  description: "Solana app for business cards",
+export const metadata = {
+  title: "Solstice – Create & Mint Your Digital NFT Design Asset",
+  description:
+    "Easily design and personalize your canvas on Solana. A seamless, fast, and secure way to share your professional identity on-chain.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Solstice – Create & Mint Your Digital NFT Design Asset",
+    url: "https://solstice-two.vercel.app",
+    siteName: "Easily design and personalize your canvas on Solana.",
+    images: [
+      {
+        url: "/thumbnail.png", // 도메인 루트에 올려야 함
+        width: 1200,
+        height: 630,
+        alt: "Solstice",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Solstice – Create & Mint Your Digital NFT Design Asset",
+    images: ["/thumbnail.png"],
+  },
 };
 
 export default function RootLayout({
