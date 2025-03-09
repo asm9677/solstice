@@ -13,8 +13,8 @@ const ImageUploader = React.forwardRef(({ onFileSelect }: ImageUploaderProps, re
     }
   }));
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {    
+    const file = event.target.files?.[0];    
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = () => {

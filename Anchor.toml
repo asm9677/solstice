@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-solstice = "4gwbY6ojH76FH4FkXeFyP4Miopi6G3dqU5fYwYeVzJa4"
+solstice = "EsjGSxfqv9jtBDWmUpPypj58uatCaqppPD7sCULujXAu"  # 필요하면 실제 Devnet 배포 후 업데이트
 
 [registry]
 url = "https://api.apr.dev"

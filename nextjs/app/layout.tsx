@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Karla, Quicksand, Lato } from "next/font/google";
 import Providers from "@/components/providers";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${inter.variable}  ${karla.variable} ${quicksand.variable} ${lato.variable} antialiased `}
       >
         <Providers>{children}</Providers>
+        <Toaster />
       </body>
     </html>
   );

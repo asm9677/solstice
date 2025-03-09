@@ -40,6 +40,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import MintModal from "./MintModal";
+import { useToast } from "@/hooks/use-toast";
 
 interface NavbarProps {
   editor: Editor | undefined;
@@ -48,7 +50,7 @@ interface NavbarProps {
   onChangeActiveTool: (activeTool: ActiveTool) => void;
 }
 
-const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
+// const SOLANA_NETWORK = "devnet"; // 네트워크 설정 (devnet, testnet, mainnet-beta)
 
 const Navbar = ({
   editor,
@@ -58,9 +60,13 @@ const Navbar = ({
 }: NavbarProps) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [mintModalOpen, setMintModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const { toaster } = useToast();
+
   const { openFilePicker } = useFilePicker({
     accept: ".json",
-    onFilesSuccessfullySelected: ({ plainFiles }: any) => {
+    onFilesSuccessfullySelected: ({ plainFiles }: { plainFiles: File[] }) => {
       if (plainFiles && plainFiles.length > 0) {
         const file = plainFiles[0];
         const reader = new FileReader();
@@ -126,18 +132,29 @@ const Navbar = ({
     formData.append("hash", hash);
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_API_URL, {
+      const response = await fetch(process.env.NEXT_PUBLIC_SERVER_URL, {
         method: "POST",
         body: formData, // FormData 전송
       });
 
       const data = await response.json();
       console.log("서버 응답:", data);
+
+      if (data) {
+        setMintModalOpen(true);
+        setImageUrl(data.url);
+
+        toaster({
+          message: "Transaction is being recorded on the blockchain...",
+          type: "success",
+        });
+      }
     } catch (error) {
       console.error("파일 업로드 실패:", error);
     }
   };
   return (
+      <>
     <nav className="flex w-full items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
       <Logo className={"w-28 h-16 relative shrink-0"} />
 
@@ -336,7 +353,11 @@ const Navbar = ({
           )}
         </div>
       </div>
-    </nav>
+    </nav>   <MintModal
+      mintModalOpen={mintModalOpen}
+      setMintModalOpen={setMintModalOpen}
+      imageUrl={imageUrl}
+  /></>
   );
 };
 

@@ -5,11 +5,8 @@ import {
   LayoutTemplate,
   ImageIcon,
   Pencil,
-  Presentation,
   Settings,
   Shapes,
-  Sparkles,
-  Type,
 } from "lucide-react";
 
 // import Elements from "../SidebarIcon/Elements";

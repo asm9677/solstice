@@ -140,7 +140,7 @@ const buildEditor = ({
       const center = canvas.getCenter();
       canvas.zoomToPoint(
         new fabric.Point(center.left, center.top),
-        zoomRatio > 1 ? 1 : zoomRatio,
+        zoomRatio > 1 ? 1 : zoomRatio
       );
     },
     zoomOut: () => {
@@ -149,7 +149,7 @@ const buildEditor = ({
       const center = canvas.getCenter();
       canvas.zoomToPoint(
         new fabric.Point(center.left, center.top),
-        zoomRatio < 0.2 ? 0.2 : zoomRatio,
+        zoomRatio < 0.2 ? 0.2 : zoomRatio
       );
     },
     saveImage,
@@ -393,7 +393,7 @@ const buildEditor = ({
           fill: fillColor,
           stroke: strokeColor,
           strokeWidth,
-        },
+        }
       );
       addToCanvas(object);
     },
@@ -410,7 +410,7 @@ const buildEditor = ({
             y: HEIGHT / 2,
           },
         ],
-        { ...DIAMOND_OPTIONS },
+        { ...DIAMOND_OPTIONS }
       );
       addToCanvas(object);
     },
@@ -575,7 +575,7 @@ export const useEditor = ({
       // 기존의 autosave_canvas local storage data가 있는 경우
       createWorkspace({ initialContainer, initialCanvas });
     },
-    [],
+    []
   );
   return { init, isSaved, editor };
 };
