@@ -26,6 +26,10 @@ export const metadata = {
   title: "Solstice – Create & Mint Your Digital NFT Design Asset",
   description:
     "Easily design and personalize your canvas on Solana. A seamless, fast, and secure way to share your professional identity on-chain.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     title: "Solstice – Create & Mint Your Digital NFT Design Asset",
     url: "https://solstice-two.vercel.app",
