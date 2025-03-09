@@ -29,8 +29,6 @@ const MintModal: React.FC<MintModalProps> = ({
 
   useEffect(() => {
     if (imagePath) {
-      console.log("imagePath: ", imagePath); // imagePath가 업데이트된 후에 로그 찍기
-
       const img = new window.Image() as HTMLImageElement;
       img.src = `/api/images/${imagePath}`;
       img.onload = () => {
@@ -38,7 +36,6 @@ const MintModal: React.FC<MintModalProps> = ({
       };
     }
   }, [imagePath]);
-
   return (
     <Dialog open={mintModalOpen} onOpenChange={setMintModalOpen}>
       <DialogOverlay
@@ -46,10 +43,19 @@ const MintModal: React.FC<MintModalProps> = ({
         onClick={() => setMintModalOpen(false)}
       />
       <DialogTitle />
-      <DialogContent className="bg-transparent p-0 m-0 overflow-hidden z-50">
+      <DialogContent
+        className="bg-transparent p-0 m-0 overflow-hidden z-50"
+        style={{
+          width: imageSize ? `${imageSize.width}` : "auto",
+          height: imageSize ? `${imageSize.height}` : "auto",
+          maxWidth:
+            imageSize?.width && imageSize.width > 1000 ? "50vw" : "20vw",
+          maxHeight: "90vh",
+        }}
+      >
         {imageSize ? (
           <Image
-            src={`/api/images/${imagePath}`} // Next.js API를 통해 불러오기
+            src={`/api/images/${imagePath}`}
             alt="Fetched Image"
             width={imageSize.width}
             height={imageSize.height}
