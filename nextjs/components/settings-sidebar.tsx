@@ -27,7 +27,6 @@ const SettingsSidebar = ({
     () => workspace?.fill ?? "#FFFFFF",
     [workspace],
   );
-  console.log({ workspace });
   const [width, setWidth] = useState(initialWidth);
   const [height, setHeight] = useState(initialHeight);
   const [background, setBackground] = useState(initialBackground);

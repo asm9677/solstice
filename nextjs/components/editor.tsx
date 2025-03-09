@@ -39,6 +39,7 @@ const Editor = () => {
     },
     [activeTool],
   );
+
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       controlsAboveOverlay: true,

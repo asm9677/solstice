@@ -4,19 +4,19 @@ import { client } from "@/lib/hono";
 
 const useGetImages = () => {
   const query = useQuery({
-    queryKey: ["images"],
+    queryKey: ["wallpaper"],
     queryFn: async () => {
-      const response = await client.api.images.$get();
+      const response = await client.api.wallpaper.$get();
+
       if (!response.ok) {
-        console.log("response is not okay");
-        throw new Error("Failed to fetch images");
+        throw new Error("Failed to fetch wallpaper");
       }
 
       const { data } = await response.json();
       return data;
     },
   });
+
   return query;
 };
-
 export default useGetImages;
